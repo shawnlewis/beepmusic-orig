@@ -1,0 +1,16 @@
+#!/bin/sh /etc/rc.common
+
+SERVICE_DAEMONIZE=1
+SERVICE_WRITE_PID=1
+SERVICE_MATCH_NAME=1
+SERVICE_MATCH_EXEC=
+
+start() {
+	echo "start beeptestmode"
+        service_start /beep/testmode/beeptestmode.sh
+}
+
+stop() {
+	echo "stop beeptestmode"
+	service_stop /beep/testmode/beeptestmode.sh
+}

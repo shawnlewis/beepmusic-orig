@@ -1,0 +1,347 @@
+diff -NaurZ a/tools/env/fw_env.c b/tools/env/fw_env.c
+--- a/tools/env/fw_env.c	2014-11-13 15:15:05.942359712 -0800
++++ b/tools/env/fw_env.c	2014-11-13 15:13:59.442358518 -0800
+@@ -37,6 +37,8 @@
+ #include <sys/stat.h>
+ #include <unistd.h>
+ 
++#define CONFIG_BEEP_ENV_REDUND
++
+ #ifdef MTD_OLD
+ # include <stdint.h>
+ # include <linux/mtd/mtd.h>
+@@ -116,9 +118,11 @@
+ 
+ static int HaveRedundEnv = 0;
+ 
++#ifndef CONFIG_BEEP_ENV_REDUND
+ static unsigned char active_flag = 1;
+ /* obsolete_flag must be 0 to efficiently set it on NOR flash without erasing */
+ static unsigned char obsolete_flag = 0;
++#endif  // CONFIG_BEEP_ENV_REDUND
+ 
+ #define DEFAULT_ENV_INSTANCE_STATIC
+ #include <env_default.h>
+@@ -287,6 +291,15 @@
+ 	 */
+ 	*environment.crc = crc32(0, (uint8_t *) environment.data, ENV_SIZE);
+ 
++// In fw_env_open we should have left dev_current at which ever one was
++// valid, but for the Beep configuration we always want to save env0 then
++// env1.
++#ifdef CONFIG_BEEP_ENV_REDUND
++    dev_current = 0;
++    // Ensure we have the correct flags.
++    *environment.flags = 0xbe;
++#endif  // CONFIG_BEEP_ENV_REDUND
++
+ 	/* write environment back to flash */
+ 	if (flash_io(O_RDWR)) {
+ 		fprintf(stderr,
+@@ -294,6 +307,14 @@
+ 			return -1;
+ 	}
+ 
++#ifdef CONFIG_BEEP_ENV_REDUND
++    dev_current = 1;
++    if (flash_io(O_RDWR)) {
++        fprintf(stderr, "Error: can't write fw_env to flash\n");
++        return -1;
++    }
++#endif  // CONFIG_BEEP_ENV_REDUND
++
+ 	return 0;
+ }
+ 
+@@ -779,6 +800,11 @@
+ 			return -1;
+ 		}
+ 
++#ifdef CONFIG_BEEP_ENV_REDUND
++        // We reserve the reset of the space in the env sector as the space
++        // for the bootcount which needs to be reset to 0xff.
++        memset(data, 0xff, erase_len);
++#else
+ 		rc = flash_read_buf (dev, fd, data, write_total, erase_offset,
+ 				     mtd_type);
+ 		if (write_total != rc)
+@@ -796,6 +822,7 @@
+ 		}
+ 		fprintf(stderr, "\n");
+ #endif
++#endif
+ 		/* Overwrite the old environment */
+ 		memcpy (data + block_seek, buf, count);
+ 	} else {
+@@ -879,6 +906,7 @@
+ /*
+  * Set obsolete flag at offset - NOR flash only
+  */
++#ifndef CONFIG_BEEP_ENV_REDUND
+ static int flash_flag_obsolete (int dev, int fd, off_t offset)
+ {
+ 	int rc;
+@@ -901,11 +929,13 @@
+ 
+ 	return rc;
+ }
++#endif  // CONFIG_BEEP_ENV_REDUND
+ 
+ static int flash_write (int fd_current, int fd_target, int dev_target)
+ {
+ 	int rc;
+ 
++#ifndef CONFIG_BEEP_ENV_REDUND
+ 	switch (environment.flag_scheme) {
+ 	case FLAG_NONE:
+ 		break;
+@@ -920,6 +950,7 @@
+ 			 environment.flag_scheme);
+ 		return -1;
+ 	}
++#endif  // CONFIG_BEEP_ENV_REDUND
+ 
+ #ifdef DEBUG
+ 	fprintf(stderr, "Writing new environment at 0x%lx on %s\n",
+@@ -931,6 +962,7 @@
+ 	if (rc < 0)
+ 		return rc;
+ 
++#ifndef CONFIG_BEEP_ENV_REDUND
+ 	if (environment.flag_scheme == FLAG_BOOLEAN) {
+ 		/* Have to set obsolete flag */
+ 		off_t offset = DEVOFFSET (dev_current) +
+@@ -942,6 +974,7 @@
+ #endif
+ 		flash_flag_obsolete (dev_current, fd_current, offset);
+ 	}
++#endif  // CONFIG_BEEP_ENV_REDUND
+ 
+ 	return 0;
+ }
+@@ -1003,7 +1036,12 @@
+ 	if (mode == O_RDWR) {
+ 		if (HaveRedundEnv) {
+ 			/* switch to next partition for writing */
++#ifdef CONFIG_BEEP_ENV_REDUND
++            // Don't want to switch between targets.
++            dev_target = dev_current;
++#else
+ 			dev_target = !dev_current;
++#endif  // CONFIG_BEEP_ENV_REDUND
+ 			/* dev_target: fd_target, erase_target */
+ 			fd_target = open (DEVNAME (dev_target), mode);
+ 			if (fd_target < 0) {
+@@ -1064,6 +1102,177 @@
+ 	return NULL;
+ }
+ 
++#ifdef CONFIG_BEEP_ENV_REDUND
++int fw_env_open(void) {
++    void *env0_addr;
++    void *env1_addr;
++    int env0_crc;
++    int env1_crc;
++    int env0_crc_ok;
++    int env1_crc_ok;
++
++    struct env_image_redundant *env0_image;
++    struct env_image_redundant *env1_image;
++
++    if (parse_config()) {
++        return -1;
++    }
++
++    // Switch to the env0.
++    dev_current = 0;
++    env0_addr = malloc(CUR_ENVSIZE);
++    if (!env0_addr) {
++        fprintf(stderr, "Out of memory for env0 (%ld bytes)\n", CUR_ENVSIZE);
++        return -1;
++    }
++
++    // Setup the global settings.
++    env0_image = (struct env_image_redundant *)env0_addr;
++    environment.image = env0_addr;
++    environment.crc = &env0_image->crc;
++    environment.flags = &env0_image->flags;
++    environment.data = env0_image->data;
++
++    // Actually read out from flash.
++    if (flash_io(O_RDONLY)) {
++        free(env0_addr);
++        fprintf(stderr, "Error reading out env0\n");
++        return -1;
++    }
++
++    env0_crc = crc32(0, (uint8_t *)environment.data, ENV_SIZE);
++    env0_crc_ok = (env0_crc == *environment.crc);
++
++    // Switch to the env1.
++    dev_current = 1;
++    env1_addr = malloc(CUR_ENVSIZE);
++    if (!env1_addr) {
++        fprintf(stderr, "Out of memory for env1 (%ld bytes)\n", CUR_ENVSIZE);
++        return -1;
++    }
++
++    // Setup the global settings.
++    env1_image = (struct env_image_redundant *)env1_addr;
++    environment.image = env1_addr;
++    environment.crc = &env1_image->crc;
++    environment.flags = &env1_image->flags;
++    environment.data = env1_image->data;
++
++    // Actually read out from flash.
++    if (flash_io(O_RDONLY)) {
++        free(env1_addr);
++        fprintf(stderr, "Error reading out env1\n");
++        return -1;
++    }
++
++    env1_crc = crc32(0, (uint8_t *)environment.data, ENV_SIZE);
++    env1_crc_ok = (env1_crc == *environment.crc);
++
++#ifdef DEBUG
++    fprintf(stderr, "env0_crc_ok: %d env1_crc_ok: %d\n", env0_crc_ok,
++            env1_crc_ok);
++    fprintf(stderr, "env0_flags: %d env1_flags: %d\n", env0_image->flags,
++            env1_image->flags);
++#endif
++
++    // This is from u-boot env_flash.c
++
++    // The standard u-boot redundant environment works with an active and
++    // obsolete sections in flash.  The current (what is in ram) is written
++    // into the obsolete section and marked as active, while the active
++    // section is marked as obsolete.  This actually keeps a backup instead
++    // of full redundant which does not work for us given what we want to
++    // store in the environment.
++
++    // Instead we always keep the same version in both sections and follow
++    // these rules:
++    // Write env0 then env1.
++    // If env0 and env1 have valid checksums use env0.
++    // If either env0 or env1 have invalid checksums use the valid env.
++    // If both have invalid checksums use default.
++
++    // This will not work with current uboot tools so we mark the flag
++    // with 0xbe to make sure we are using something saved by our version
++    // of the tools and mark it as invalid.
++
++    if (env0_image->flags != 0xbe) {
++        env0_crc_ok = 0;
++    }
++    if (env1_image->flags != 0xbe) {
++        env1_crc_ok = 0;
++    }
++
++    if ((env0_crc_ok && env1_crc_ok) ||
++        (env0_crc_ok && !env1_crc_ok)) {
++        // Both valid or just env0 is valid, use env0.
++        environment.image = env0_addr;
++        environment.crc = &env0_image->crc;
++        environment.flags = &env0_image->flags;
++        environment.data = env0_image->data;
++        environment.flag_scheme = FLAG_BOOLEAN;
++        free(env1_addr);
++
++        // TODOJOE: Should probably do this automatically.
++        // If both CRCs are valid but mismatch or if env1 CRC is invalid we
++        // want to use env0.
++        if (((env0_crc_ok && env1_crc_ok) && (env0_crc != env1_crc))
++                || !env1_crc_ok) {
++            if (!env1_crc_ok) {
++                fprintf(stderr,
++                        "env1 CRC failed, using env0, corrective action taken\n");
++            } else {
++                fprintf(stderr,
++                        "CRC mismatch, using env0, corrective action taken\n");
++            }
++
++            // Set current to env1 and save.
++            dev_current = 1;
++            if (flash_io(O_RDWR)) {
++                fprintf(stderr, "Error: can't write fw_env to flash\n");
++                return -1;
++            }
++        }
++
++        // Set current to env0.
++        dev_current = 0;
++    } else if (!env0_crc_ok && env1_crc_ok) {
++        environment.image = env1_addr;
++        environment.crc = &env1_image->crc;
++        environment.flags = &env1_image->flags;
++        environment.data = env1_image->data;
++        environment.flag_scheme = FLAG_BOOLEAN;
++        free(env0_addr);
++
++        fprintf(stderr,
++                "env0 CRC failed, using env1, corrective action taken\n");
++
++        // Set current to env1 and save.
++        dev_current = 0;
++        if (flash_io(O_RDWR)) {
++            fprintf(stderr, "Error: can't write fw_env to flash\n");
++            return -1;
++        }
++
++        // Set current to env1.
++        dev_current = 1;
++    } else {
++        // Use the space allocated by env0 for the default env.
++        environment.image = env0_addr;
++        environment.crc = &env0_image->crc;
++        environment.flags = &env0_image->flags;
++        environment.data = env0_image->data;
++        environment.flag_scheme = FLAG_BOOLEAN;
++        dev_current = 0;
++        free(env1_addr);
++
++        memcpy(environment.data, default_environment,
++                sizeof(default_environment));
++        fprintf (stderr, "env0/env1 CRC failed, using default environment\n");
++    }
++
++    return 0;
++}
++#else // CONFIG_BEEP_ENV_REDUND
+ /*
+  * Prevent confusion if running from erased flash memory
+  */
+@@ -1228,6 +1437,7 @@
+ 	}
+ 	return 0;
+ }
++#endif // CONFIG_BEEP_ENV_REDUND
+ 
+ 
+ static int parse_config ()
+@@ -1327,6 +1537,13 @@
+ 	fclose (fp);
+ 
+ 	HaveRedundEnv = i - 1;
++#ifdef CONFIG_BEEP_ENV_REDUND
++    if (!HaveRedundEnv) {
++        fprintf(stderr, "Beep env must be redundant\n");
++        errno = EINVAL;
++        return -1;
++    }
++#endif
+ 	if (!i) {			/* No valid entries found */
+ 		errno = EINVAL;
+ 		return -1;
+diff -NaurZ a/tools/env/Makefile b/tools/env/Makefile
+--- a/tools/env/Makefile	2014-11-13 15:15:05.942359712 -0800
++++ b/tools/env/Makefile	2014-11-13 15:13:59.442358518 -0800
+@@ -34,7 +34,8 @@
+ 		-idirafter $(OBJTREE)/include \
+ 		-idirafter $(SRCTREE)/tools/env \
+ 		-DUSE_HOSTCC \
+-		-DTEXT_BASE=$(TEXT_BASE)
++		-DTEXT_BASE=$(TEXT_BASE) \
++		-g
+ 
+ ifeq ($(MTD_VERSION),old)
+ HOSTCPPFLAGS += -DMTD_OLD

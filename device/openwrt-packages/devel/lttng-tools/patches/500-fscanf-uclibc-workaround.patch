@@ -1,0 +1,37 @@
+diff -Naur a/src/bin/lttng-sessiond/kernel.c b/src/bin/lttng-sessiond/kernel.c
+--- a/src/bin/lttng-sessiond/kernel.c	2014-03-28 00:15:54.328258125 -0400
++++ b/src/bin/lttng-sessiond/kernel.c	2014-03-28 00:16:51.452260159 -0400
+@@ -603,7 +603,7 @@
+ ssize_t kernel_list_events(int tracer_fd, struct lttng_event **events)
+ {
+ 	int fd, ret;
+-	char *event;
++	char event[256];
+ 	size_t nbmem, count = 0;
+ 	FILE *fp;
+ 	struct lttng_event *elist;
+@@ -634,7 +634,7 @@
+ 		goto end;
+ 	}
+ 
+-	while (fscanf(fp, "event { name = %m[^;]; };\n", &event) == 1) {
++	while (fscanf(fp, "event { name = %[^;]; };\n", event) == 1) {
+ 		if (count >= nbmem) {
+ 			struct lttng_event *new_elist;
+ 			size_t new_nbmem;
+@@ -645,7 +645,6 @@
+ 			new_elist = realloc(elist, new_nbmem * sizeof(struct lttng_event));
+ 			if (new_elist == NULL) {
+ 				PERROR("realloc list events");
+-				free(event);
+ 				free(elist);
+ 				count = -ENOMEM;
+ 				goto end;
+@@ -660,7 +659,6 @@
+ 		elist[count].name[LTTNG_SYMBOL_NAME_LEN - 1] = '\0';
+ 		elist[count].enabled = -1;
+ 		count++;
+-		free(event);
+ 	}
+ 
+ 	*events = elist;

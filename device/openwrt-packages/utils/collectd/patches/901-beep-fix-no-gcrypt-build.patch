@@ -1,0 +1,12 @@
+diff -NaruZ a/configure.in b/configure.in
+--- a/configure.in	2014-12-15 17:42:39.097670720 -0800
++++ b/configure.in	2014-12-15 17:42:58.961671077 -0800
+@@ -1909,7 +1909,7 @@
+ 		[with_libgcrypt="no (symbol gcry_md_hash_buffer not found)"])
+
+ 	if test "$with_libgcrypt" != "no"; then
+-		AM_PATH_LIBGCRYPT(1:1.2.0,,with_libgcrypt="no (version 1.2.0+ required)")
++		#AM_PATH_LIBGCRYPT(1:1.2.0,,with_libgcrypt="no (version 1.2.0+ required)")
+ 		GCRYPT_CPPFLAGS="$LIBGCRYPT_CPPFLAGS $LIBGCRYPT_CFLAGS"
+ 		GCRYPT_LIBS="$LIBGCRYPT_LIBS"
+ 	fi

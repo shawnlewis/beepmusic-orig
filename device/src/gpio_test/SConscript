@@ -1,0 +1,9 @@
+Import('root_env', 'env')
+
+
+gpio_test_src = ['gpio_test/main.c']
+
+gpio_test = env.Program(
+    target='gpio_test',
+    source=gpio_test_src,
+    LIBS=['beep', 'pthread'])

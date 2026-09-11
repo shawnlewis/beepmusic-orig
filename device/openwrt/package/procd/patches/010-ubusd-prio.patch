@@ -1,0 +1,11 @@
+--- a/ubus.c
++++ b/ubus.c
+@@ -47,7 +47,7 @@ static void procd_restart_ubus(void)
+ 
+ 	ubus_proc.pid = fork();
+ 	if (!ubus_proc.pid) {
+-		setpriority(PRIO_PROCESS, 0, -20);
++		setpriority(PRIO_PROCESS, 0, -15);
+ 		execvp(argv[0], argv);
+ 		exit(-1);
+ 	}

@@ -1,0 +1,44 @@
+--- a/Makefile
++++ b/Makefile
+@@ -73,8 +73,8 @@ ifeq (${DISABLE_MAD}, 1)
+ 	LIBMAD_LDFLAGS=
+ else
+ 	LIBMAD_CFLAGS=-DENABLE_MAD
+-	LIBMAD_CFLAGS+=$(shell pkg-config --cflags mad)
+-	LIBMAD_LDFLAGS=$(shell pkg-config --libs mad)
++	LIBMAD_CFLAGS+=
++	LIBMAD_LDFLAGS=-lmad
+ endif
+ 
+ LIBGNUTLS_CFLAGS=$(shell pkg-config --cflags gnutls)
+@@ -91,7 +91,7 @@ ifeq (${DYNLINK},1)
+ pianobar: ${PIANOBAR_OBJ} ${PIANOBAR_HDR} libpiano.so.0
+ 	@echo "  LINK  $@"
+ 	@${CC} -o $@ ${PIANOBAR_OBJ} ${LDFLAGS} -lao -lpthread -lm -L. -lpiano \
+-			${LIBFAAD_LDFLAGS} ${LIBMAD_LDFLAGS} ${LIBGNUTLS_LDFLAGS}
++			${LIBFAAD_LDFLAGS} ${LIBMAD_LDFLAGS} ${LIBGNUTLS_LDFLAGS} ${LIBGCRYPT_LDFLAGS}
+ else
+ pianobar: ${PIANOBAR_OBJ} ${PIANOBAR_HDR} ${LIBPIANO_OBJ} ${LIBWAITRESS_OBJ} \
+ 		${LIBWAITRESS_HDR}
+@@ -110,8 +110,8 @@ libpiano.so.0: ${LIBPIANO_RELOBJ} ${LIBP
+ 			-o libpiano.so.0.0.0 ${LIBPIANO_RELOBJ} \
+ 			${LIBWAITRESS_RELOBJ} ${LIBGNUTLS_LDFLAGS} ${LIBGCRYPT_LDFLAGS} \
+ 			${LIBJSONC_LDFLAGS}
+-	@ln -s libpiano.so.0.0.0 libpiano.so.0
+-	@ln -s libpiano.so.0 libpiano.so
++	@ln -sf libpiano.so.0.0.0 libpiano.so.0
++	@ln -sf libpiano.so.0 libpiano.so
+ 	@echo "    AR  libpiano.a"
+ 	@${AR} rcs libpiano.a ${LIBPIANO_OBJ} ${LIBWAITRESS_OBJ}
+ 
+@@ -200,8 +200,8 @@ endif
+ install-libpiano:
+ 	install -d ${DESTDIR}/${LIBDIR}/
+ 	install -m644 libpiano.so.0.0.0 ${DESTDIR}/${LIBDIR}/
+-	ln -s libpiano.so.0.0.0 ${DESTDIR}/${LIBDIR}/libpiano.so.0
+-	ln -s libpiano.so.0 ${DESTDIR}/${LIBDIR}/libpiano.so
++	ln -sf libpiano.so.0.0.0 ${DESTDIR}/${LIBDIR}/libpiano.so.0
++	ln -sf libpiano.so.0 ${DESTDIR}/${LIBDIR}/libpiano.so
+ 	install -m644 libpiano.a ${DESTDIR}/${LIBDIR}/
+ 	install -d ${DESTDIR}/${INCDIR}/
+ 	install -m644 src/libpiano/piano.h ${DESTDIR}/${INCDIR}/

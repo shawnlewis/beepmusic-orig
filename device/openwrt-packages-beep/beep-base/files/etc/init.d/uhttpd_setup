@@ -1,0 +1,14 @@
+#!/bin/sh /etc/rc.common
+# Copyright (C) 2010 Jo-Philipp Wich
+
+# No START or STOP -- this is called by beepmainio
+
+start() {
+    echo "start uhttpd_setup"
+    service_start /beep/uhttpd_setup
+}
+
+stop() {
+    echo "stop uhttpd_setup"
+    killall uhttpd
+}

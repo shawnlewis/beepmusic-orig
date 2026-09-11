@@ -1,0 +1,27 @@
+Import('root_env', 'env')
+
+
+env.Symlink(target='static/backbone.js', source='web-controller/backbone.js')
+env.Symlink(target='static/beep.css', source='web-controller/beep.css')
+env.Symlink(target='static/beep-icon-64.png', source='web-controller/beep-icon-64.png')
+env.Symlink(target='static/beep-icon-128.png', source='web-controller/beep-icon-128.png')
+env.Symlink(target='static/jquery.js', source='web-controller/jquery.js')
+env.Symlink(target='static/ICanHaz.js', source='web-controller/ICanHaz.js')
+env.Symlink(target='static/index.html', source='web-controller/index.html')
+env.Symlink(target='static/json2.js', source='web-controller/json2.js')
+env.Symlink(target='static/lib.js', source='web-controller/lib.js')
+env.Symlink(target='static/mustache.js', source='web-controller/mustache.js')
+env.Symlink(target='static/pause_button.png', source='web-controller/pause_button.png')
+env.Symlink(target='static/play_button.png', source='web-controller/play_button.png')
+env.Symlink(target='static/reset.css', source='web-controller/reset.css')
+env.Symlink(target='static/skip_button.png', source='web-controller/skip_button.png')
+env.Symlink(target='static/underscore.js', source='web-controller/underscore.js')
+env.Symlink(target='static/underscore-min.js', source='web-controller/underscore-min.js')
+
+web_controller_main = env.Coffee(
+    target='static/gen/main.js',
+    source='web-controller/main.coffee')
+
+web_controller_network = env.Coffee(
+    target='static/gen/network.js',
+    source='web-controller/network.coffee')

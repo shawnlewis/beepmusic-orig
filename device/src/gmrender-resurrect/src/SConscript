@@ -1,0 +1,54 @@
+Import('root_env', 'env')
+#
+## app_playnet
+#app_playnet_test_src = ['apps/app_playnet_test.c']
+#
+#app_playnet_test = env.Program(
+#    target='app_playnet_test',
+#    source=app_playnet_test_src,
+#    LIBS=['beep', 'pthread', 'ubox'])
+#
+## app_spotify
+#spotify_env = env.Clone()
+#
+#spotify_env.Append(
+#    LINKFLAGS='-Wl,-Bstatic,--whole-archive,-lm,--no-whole-archive,-Bdynamic',
+#    efilt={'arch': ['mips','x86_64']})
+#
+#spotify_env.Append(CPPPATH='#/lib/libspotify-embedded-$TARGET_ARCH/include')
+#libspotify = spotify_env.Symlink(
+#    target='libspotify_embedded_shared.so',
+#    source='lib/libspotify-embedded-$TARGET_ARCH/lib/libspotify_embedded_shared.so')
+
+
+# NOTE: This is very important! Without off_t will be defined wrong, which
+# resulted in at least one very hard to track down problem where a struct
+# was different between two adjacent stack frames, causing webserver.c
+# to not work.
+env.Append(CFLAGS=[
+    '-include',
+    'upnp/upnpconfig.h',
+])
+
+gmrender_src = [
+    'gmrender-resurrect/src/logging.c',
+    'gmrender-resurrect/src/main.c',
+    'gmrender-resurrect/src/output.c',
+    'gmrender-resurrect/src/output_beep.c',
+    'gmrender-resurrect/src/song-meta-data.c',
+    'gmrender-resurrect/src/upnp.c',
+    'gmrender-resurrect/src/upnp_connmgr.c',
+    'gmrender-resurrect/src/upnp_control.c',
+    'gmrender-resurrect/src/upnp_device.c',
+    'gmrender-resurrect/src/upnp_renderer.c',
+    'gmrender-resurrect/src/upnp_transport.c',
+    'gmrender-resurrect/src/variable-container.c',
+    'gmrender-resurrect/src/webserver.c',
+    'gmrender-resurrect/src/xmldoc.c',
+    'gmrender-resurrect/src/xmlescape.c'
+]
+
+gmrender = env.Program(
+    target='gmrender',
+    source=gmrender_src,
+    LIBS=['beep', 'ubox', 'ubus', 'upnp', 'ixml', 'pthread', 'm'])

@@ -1,0 +1,36 @@
+#!/bin/sh /etc/rc.common
+#
+# Copyright (C) 2009 OpenWrt.org
+#
+
+START=05
+
+start() {
+	exec 1>/dev/console  ;# redirect stdout to serial console
+	exec 2>/dev/console  ;# redirect stderr to serial console
+
+	echo "defconfig start()"
+
+	mkdir -p /var/lock
+
+	/usr/sbin/fw_printenv dev_lRapcY7M >/dev/null 2>&1
+	if [ $? -eq 0 ]; then
+		grep -q -F 'ttyATH0::askfirst:/bin/ash --login' /etc/inittab || (echo 'ttyATH0::askfirst:/bin/ash --login' >> /etc/inittab && kill -1 1)
+	else
+		grep -q -F 'ttyATH0::askfirst:/bin/ash --login' /etc/inittab && sed -i '/ttyATH0/d' /etc/inittab && kill -1 1
+	fi
+
+	. /lib/ar71xx.sh
+
+	local board=$(ar71xx_board_name)
+
+	echo "defconfig start() done"
+	[ ! -d /etc/defconfig/$board ] && return 0
+
+	for f in $( ls /etc/defconfig/$board ); do
+		if [ ! -e /etc/config/$f ]; then
+			cp /etc/defconfig/$board/$f /etc/config/
+		fi
+	done
+	echo "defconfig start() done 1"
+}

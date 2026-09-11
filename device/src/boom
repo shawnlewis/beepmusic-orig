@@ -1,0 +1,152 @@
+#!/bin/bash
+
+SCRIPT=$(readlink -f $0)
+SCRIPTPATH=`dirname $SCRIPT`
+
+. $SCRIPTPATH/sh/beeplib.sh
+
+usage() {
+    echo "boom <command> [args]"
+    echo
+    echo "Device commands operate on the virtual device specified by DEVNAME, "
+    echo "which is read from the current directory name if you are "
+    echo "in a directory containing a \"beep\" uci config file."
+    echo
+    echo "If you are not in a device directory, you must specify device names "
+    echo "as arguments to your command: (ex: 'boom start a1 a2'). The devices "
+    echo "will be looked up in BEEPDEVS_DIR which is read from ~/.beepsdk"
+    echo
+    echo "Multi-Device commands. you may specify a list of devices as an"
+    echo "argument to these commands. If you don't boom will default to"
+    echo "all available devices."
+    echo
+    echo "    start: starts beep components: $DEFAULT_COMPONENTS"
+    echo "    stop: safely stops this device's components (SIGTERM)"
+    echo "    restart: restarts the beep components"
+    echo "    ps: ps output for this device's components"
+    echo "    pids: list pids for this device's components"
+    echo
+    echo "Single-Device commands. These take a single device as an argument."
+    echo "Some commands have extra arguments, specified below."
+    echo
+    echo "    ubus: use the ubus command line tool on this device. simply run"
+    echo "        \"boom ubus <devname>\" by itself to see what extra arguments"
+    echo "        are available. (e.g. \"boom ubus <devname> list -v\")"
+    echo "    tail: tail the logs for this device's components"
+    echo "    app_run: run a beep javascript app. Specify the javascript file"
+    echo "        to run as the final argument (e.g. \"boom runapp <devname> test.js\""
+    echo "    app_message: send a message to a beep javascript app."
+    echo "        (e.g. boom app_message dev.a beep.app.sample '{\"type\": \"hello\"}')"
+
+}
+
+if [ "$1" = "start" ]; then
+    shift
+
+    if [ "$#" -eq 0 ]; then
+        on_devices $(all_devices) do: device_start
+    else
+        on_devices "$@" do: device_start
+    fi
+
+elif [ "$1" == "stop" ]; then
+    shift
+
+    if [ "$#" -eq 0 ]; then
+        on_devices -q $(running_devices) do: device_stop
+    else
+        on_devices -q "$@" do: device_stop
+    fi
+
+    if [ $? -eq 1 ]; then
+        echo "==> No devices to stop; doing nothing."
+    fi
+
+elif [ "$1" == "restart" ]; then
+    shift
+
+    if [ "$#" -eq 0 ]; then
+        _BOOM_DEVICES="$(running_devices)"
+    else
+        _BOOM_DEVICES="$@"
+    fi
+
+    on_devices "$_BOOM_DEVICES" do: device_stop
+    sleep 1
+    on_devices "$_BOOM_DEVICES" do: device_start
+
+elif [ "$1" == "ps" ]; then
+    shift
+
+    on_devices "$(running_devices)" do: device_ps
+
+elif [ "$1" == "pids" ]; then
+    shift
+
+    on_devices "$(running_devices)" do: device_pids
+
+elif [ "$1" == "ubus" ]; then
+    shift
+
+    _BOOM_DEVICE=$1
+    shift
+
+    on_devices $_BOOM_DEVICE do: device_ubus $@
+    if [ ! $? -eq 0 ]; then
+        echo "Usage: boom ubus <devname> [ubus parameters...]"
+        exit 1
+    fi
+
+elif [ "$1" == "tail" ]; then
+    shift
+
+    _BOOM_DEVICE=$1
+    shift
+
+    if [ "$#" -gt 0 ]; then
+        echo "Warning: This method only accepts one devname; ignoring all but first."
+        echo
+    fi
+
+    on_devices $_BOOM_DEVICE do: device_tail
+    if [ ! $? -eq 0 ]; then
+        echo "Usage: boom tail <devname>"
+        exit 1
+    fi
+
+elif [ "$1" == "log" ]; then
+    shift
+
+    _BOOM_DEVICE=$1
+    shift
+
+    if [ "$#" -gt 0 ]; then
+        echo "Warning: This method only accepts one devname; ignoring all but first."
+        echo
+    fi
+
+    on_devices $_BOOM_DEVICE do: device_log
+    if [ ! $? -eq 0 ]; then
+        echo "Usage: boom tail <devname>"
+        exit 1
+    fi
+
+elif [ "$1" == "app_run" ]; then
+    shift
+
+    _BOOM_DEVICE=$1
+    shift
+
+    device_app_run $_BOOM_DEVICE $@
+
+elif [ "$1" == "app_message" ]; then
+    shift
+
+    _BOOM_DEVICE=$1
+    shift
+
+    do_for_device $_BOOM_DEVICE do: device_app_msg $@
+else
+    usage
+
+fi

@@ -1,0 +1,9 @@
+Import('root_env', 'env')
+
+
+beephead_simple_src = ['beephead-simple/beephead-simple.c']
+
+beephead_simple = env.Program(
+    target='beephead_simple',
+    source=beephead_simple_src,
+    LIBS=['beep', 'ubox', 'ubus'])

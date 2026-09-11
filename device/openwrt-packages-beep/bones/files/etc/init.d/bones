@@ -1,0 +1,22 @@
+#!/bin/sh /etc/rc.common
+
+# Start right after and stop right before network.
+# Stopping will set core_pattern to the default.
+
+START=21
+STOP=89
+
+start() {
+	exec 1>/dev/console  ;# redirect stdout to serial console
+	exec 2>/dev/console  ;# redirect stderr to serial console
+
+        echo start bones
+        echo "|/beep/bones.sh %t %p %s %h %e" > /proc/sys/kernel/core_pattern
+        ulimit -c unlimited
+}
+
+stop() {
+        echo stop bones
+        echo "/tmp/%e.%p.%s.%t.core" > /proc/sys/kernel/core_pattern
+}
+

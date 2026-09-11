@@ -1,0 +1,4 @@
+Import('root_env', 'env')
+
+env.Symlink(target='app_playlist.js', source='sample_apps/app_playlist.js')
+env.Symlink(target='app_echo.js', source='sample_apps/app_echo.js')

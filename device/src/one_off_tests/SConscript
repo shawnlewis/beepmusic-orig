@@ -1,0 +1,8 @@
+Import('root_env', 'env')
+
+mdns_lookup_src = ['one_off_tests/mdns_lookup.c']
+
+mdns_lookup = env.Program(
+    target='mdns_lookup',
+    source=mdns_lookup_src,
+    LIBS=['beep', 'mdns', 'dns_sd'])

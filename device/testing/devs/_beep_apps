@@ -1,0 +1,15 @@
+config app 'pandora'
+    option 'display_name' 'Pandora'
+    option 'path' './app_pandora.js'
+
+config app 'sample_playlist'
+    option 'display_name' 'Sample App (Playlist)'
+    option 'path' './app_playlist.js'
+
+config app 'generic'
+    option 'display_name' 'Generic Player'
+    option 'path' './app_generic.js'
+
+config app 'echo'
+    option 'display_name' 'Echo'
+    option 'path' '/home/nick/src/beep/device/src/sample_apps/app_echo.js'

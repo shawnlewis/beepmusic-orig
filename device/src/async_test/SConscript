@@ -1,0 +1,9 @@
+Import('root_env', 'env')
+
+
+async_test_src = ['async_test/async_test.c']
+
+async_test = env.Program(
+    target='async_test',
+    source=async_test_src,
+    LIBS=['beep', 'ubox', 'pthread'])

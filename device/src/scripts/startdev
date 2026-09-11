@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -z "$1" ]
+then
+    echo "Starts a beep device"
+    echo "Usage: $0 <host>"
+else
+    HOST=$1
+    CMD="/etc/init.d/beepmanager start"
+    ssh $HOST $CMD
+fi

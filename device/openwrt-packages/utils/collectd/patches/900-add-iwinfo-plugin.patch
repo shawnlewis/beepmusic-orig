@@ -1,0 +1,691 @@
+diff -Naru a/configure.in b/configure.in
+--- a/configure.in	2013-08-18 06:24:25.049973054 -0400
++++ b/configure.in	2013-09-01 17:50:23.914596620 -0400
+@@ -567,6 +567,9 @@
+ have_termios_h="no"
+ AC_CHECK_HEADERS(termios.h, [have_termios_h="yes"])
+ 
++# For the iwinfo plugin
++AC_CHECK_LIB(iwinfo, iwinfo_backend, [with_iwinfo="yes"], [with_iwinfo="no (libiwinfo not found)"], [])
++
+ #
+ # Checks for typedefs, structures, and compiler characteristics.
+ #
+@@ -980,7 +983,7 @@
+ 	uint8_t c[8];
+ 	double d;
+ 
+-	d = 8.642135e130; 
++	d = 8.642135e130;
+ 	memcpy ((void *) &i0, (void *) &d, 8);
+ 
+ 	i1 = i0;
+@@ -1035,7 +1038,7 @@
+ 	uint8_t c[8];
+ 	double d;
+ 
+-	d = 8.642135e130; 
++	d = 8.642135e130;
+ 	memcpy ((void *) &i0, (void *) &d, 8);
+ 
+ 	i1 = endianflip (i0);
+@@ -1084,7 +1087,7 @@
+ 	uint8_t c[8];
+ 	double d;
+ 
+-	d = 8.642135e130; 
++	d = 8.642135e130;
+ 	memcpy ((void *) &i0, (void *) &d, 8);
+ 
+ 	i1 = intswap (i0);
+@@ -1225,7 +1228,7 @@
+       have_htonll="yes"
+       AC_DEFINE(HAVE_HTONLL, 1, [Define if the function htonll exists.])
+     ])
+- 
++
+ AC_MSG_RESULT([$have_htonll])
+ 
+ # Check for structures
+@@ -1368,7 +1371,7 @@
+ 
+ AM_CONDITIONAL([BUILD_FREEBSD],[test "x$x$ac_system" = "xFreeBSD"])
+ 
+-AM_CONDITIONAL([BUILD_AIX],[test "x$x$ac_system" = "xAIX"]) 
++AM_CONDITIONAL([BUILD_AIX],[test "x$x$ac_system" = "xAIX"])
+ 
+ if test "x$ac_system" = "xAIX"
+ then
+@@ -1436,7 +1439,7 @@
+ AC_CHECK_LIB(IOKit, IOServiceGetMatchingServices,
+ [
+ 	with_libiokit="yes"
+-], 
++],
+ [
+ 	with_libiokit="no"
+ ])
+@@ -2774,7 +2777,7 @@
+ 	else
+ 		SAVE_CPPFLAGS="$CPPFLAGS"
+ 		CPPFLAGS="$CPPFLAGS $with_snmp_cflags"
+-		
++
+ 		AC_CHECK_HEADERS(net-snmp/net-snmp-config.h, [], [with_libnetsnmp="no (net-snmp/net-snmp-config.h not found)"])
+ 
+ 		CPPFLAGS="$SAVE_CPPFLAGS"
+@@ -3001,7 +3004,7 @@
+ then
+ 	SAVE_CPPFLAGS="$CPPFLAGS"
+ 	CPPFLAGS="$with_libowcapi_cppflags"
+-	
++
+ 	AC_CHECK_HEADERS(owcapi.h, [with_libowcapi="yes"], [with_libowcapi="no (owcapi.h not found)"])
+ 
+ 	CPPFLAGS="$SAVE_CPPFLAGS"
+@@ -3012,7 +3015,7 @@
+ 	SAVE_CPPFLAGS="$CPPFLAGS"
+ 	LDFLAGS="$with_libowcapi_libs"
+ 	CPPFLAGS="$with_libowcapi_cppflags"
+-	
++
+ 	AC_CHECK_LIB(owcapi, OW_get, [with_libowcapi="yes"], [with_libowcapi="no (libowcapi not found)"])
+ 
+ 	LDFLAGS="$SAVE_LDFLAGS"
+@@ -4000,7 +4003,7 @@
+ LDFLAGS="$SAVE_LDFLAGS"
+ 
+ if test "x$with_libtokyotyrant" = "xyes"
+-then 
++then
+   BUILD_WITH_LIBTOKYOTYRANT_CPPFLAGS="$with_libtokyotyrant_cppflags"
+   BUILD_WITH_LIBTOKYOTYRANT_LDFLAGS="$with_libtokyotyrant_ldflags"
+   BUILD_WITH_LIBTOKYOTYRANT_LIBS="$with_libtokyotyrant_libs"
+@@ -4765,6 +4768,7 @@
+ plugin_ipmi="no"
+ plugin_ipvs="no"
+ plugin_irq="no"
++plugin_iwinfo="no"
+ plugin_libvirt="no"
+ plugin_load="no"
+ plugin_memory="no"
+@@ -5104,6 +5108,7 @@
+ AC_PLUGIN([iptables],    [$with_libiptc],      [IPTables rule counters])
+ AC_PLUGIN([ipvs],        [$plugin_ipvs],       [IPVS connection statistics])
+ AC_PLUGIN([irq],         [$plugin_irq],        [IRQ statistics])
++AC_PLUGIN([iwinfo],      [$with_iwinfo],       [Common iwinfo wireless statistics])
+ AC_PLUGIN([java],        [$with_java],         [Embed the Java Virtual Machine])
+ AC_PLUGIN([libvirt],     [$plugin_libvirt],    [Virtual machine statistics])
+ AC_PLUGIN([load],        [$plugin_load],       [System load])
+@@ -5404,6 +5409,7 @@
+     protobuf-c  . . . . . $have_protoc_c
+     oracle  . . . . . . . $with_oracle
+     python  . . . . . . . $with_python
++    iwinfo  . . . . . . . $with_iwinfo
+ 
+   Features:
+     daemon mode . . . . . $enable_daemon
+@@ -5448,6 +5454,7 @@
+     iptables  . . . . . . $enable_iptables
+     ipvs  . . . . . . . . $enable_ipvs
+     irq . . . . . . . . . $enable_irq
++    iwinfo  . . . . . . . $enable_iwinfo
+     java  . . . . . . . . $enable_java
+     libvirt . . . . . . . $enable_libvirt
+     load  . . . . . . . . $enable_load
+diff -Naru a/src/collectd.conf.in b/src/collectd.conf.in
+--- a/src/collectd.conf.in	2013-08-18 06:24:25.065973312 -0400
++++ b/src/collectd.conf.in	2013-09-01 17:51:54.674593430 -0400
+@@ -109,6 +109,7 @@
+ #@BUILD_PLUGIN_IPMI_TRUE@LoadPlugin ipmi
+ #@BUILD_PLUGIN_IPVS_TRUE@LoadPlugin ipvs
+ #@BUILD_PLUGIN_IRQ_TRUE@LoadPlugin irq
++#@BUILD_PLUGIN_IWINFO_TRUE@LoadPlugin iwinfo
+ #@BUILD_PLUGIN_JAVA_TRUE@LoadPlugin java
+ #@BUILD_PLUGIN_LIBVIRT_TRUE@LoadPlugin libvirt
+ @BUILD_PLUGIN_LOAD_TRUE@@BUILD_PLUGIN_LOAD_TRUE@LoadPlugin load
+@@ -460,6 +461,12 @@
+ #	IgnoreSelected true
+ #</Plugin>
+ 
++#<Plugin iwinfo>
++#   Interface "ath0"
++#   Interface "ra0"
++#   Interface "wlan0"
++#</Plugin>
++
+ #<Plugin "java">
+ #	JVMArg "-verbose:jni"
+ #	JVMArg "-Djava.class.path=@prefix@/share/collectd/java/collectd-api.jar"
+diff -Naru a/src/collectd.conf.pod b/src/collectd.conf.pod
+--- a/src/collectd.conf.pod	2013-08-18 06:24:25.069973376 -0400
++++ b/src/collectd.conf.pod	2013-09-01 17:52:34.254592040 -0400
+@@ -9,14 +9,14 @@
+   BaseDir "/path/to/data/"
+   PIDFile "/path/to/pidfile/collectd.pid"
+   Server  "123.123.123.123" 12345
+-  
++
+   LoadPlugin cpu
+   LoadPlugin load
+-  
++
+   <LoadPlugin df>
+     Interval 3600
+   </LoadPlugin>
+-  
++
+   LoadPlugin ping
+   <Plugin ping>
+     Host "example.org"
+@@ -341,10 +341,10 @@
+    <Aggregation>
+      Plugin "cpu"
+      Type "cpu"
+-     
++
+      GroupBy "Host"
+      GroupBy "TypeInstance"
+-     
++
+      CalculateSum true
+      CalculateAverage true
+    </Aggregation>
+@@ -420,13 +420,13 @@
+      Plugin "cpu"
+      PluginInstance "/[0,2,4,6,8]$/"
+      Type "cpu"
+-     
++
+      SetPlugin "cpu"
+      SetPluginInstance "even-%{aggregation}"
+-     
++
+      GroupBy "Host"
+      GroupBy "TypeInstance"
+-     
++
+      CalculateAverage true
+    </Aggregation>
+  </Plugin>
+@@ -495,7 +495,7 @@
+  #   GraphitePrefix "collectd."
+  #   GraphiteEscapeChar "_"
+    </Publish>
+-   
++
+    # Receive values from an AMQP broker
+    <Subscribe "some_name">
+      Host "localhost"
+@@ -822,17 +822,17 @@
+    ParseTime       false
+    OpCodes         true
+    QTypes          true
+- 
++
+    ServerStats     true
+    ZoneMaintStats  true
+    ResolverStats   false
+    MemoryStats     true
+- 
++
+    <View "_default">
+      QTypes        true
+      ResolverStats true
+      CacheRRSets   true
+- 
++
+      Zone "127.in-addr.arpa/IN"
+    </View>
+  </Plugin>
+@@ -1603,7 +1603,7 @@
+ 
+ =item B<ValuesAbsolute> B<true>|B<false>
+ 
+-Enables or disables reporting of free, used and used disk space in 1K-blocks. 
++Enables or disables reporting of free, used and used disk space in 1K-blocks.
+ Defaults to true.
+ 
+ =item B<ValuesPercentage> B<true>|B<false>
+@@ -2056,6 +2056,27 @@
+ 
+ =back
+ 
++=head2 Plugin C<iwinfo>
++
++=over 4
++
++=item B<Interface> I<Interface>
++
++Select this interface. By default all detected wireless interfaces will be
++collected. For a more detailed description see B<IgnoreSelected> below.
++
++=item B<IgnoreSelected> I<true>|I<false>
++
++If no configuration if given, the B<iwinfo>-plugin will collect data from all
++detected wireless interfaces. You can use the B<Interface>-option to pick the
++interfaces you're interested in. Sometimes, however, it's easier/preferred to
++collect all interfaces I<except> a few ones. This option enables you to do
++that: By setting B<IgnoreSelected> to I<true> the effect of B<Interface> is
++inverted: All selected interfaces are ignored and all other interfaces are
++collected.
++
++=back
++
+ =head2 Plugin C<java>
+ 
+ The I<Java> plugin makes it possible to write extensions for collectd in Java.
+@@ -2406,7 +2427,7 @@
+    ShowCPU true
+    ShowCPUCores true
+    ShowMemory true
+-   
++
+    ShowTemperatures true
+    Temperature vddg
+    Temperature vddq
+@@ -2415,7 +2436,7 @@
+    ShowPower true
+    Power total0
+    Power total1
+-   IgnoreSelectedPower true   
++   IgnoreSelectedPower true
+  </Plugin>
+ 
+ The following options are valid inside the B<PluginE<nbsp>mic> block:
+@@ -2472,7 +2493,7 @@
+ 
+ =item fout
+ 
+-Fan Out 
++Fan Out
+ 
+ =item vccp
+ 
+@@ -2513,11 +2534,11 @@
+ 
+ =item total0
+ 
+-Total power utilization averaged over Time Window 0 (uWatts). 
++Total power utilization averaged over Time Window 0 (uWatts).
+ 
+ =item total1
+ 
+-Total power utilization averaged over Time Window 0 (uWatts). 
++Total power utilization averaged over Time Window 0 (uWatts).
+ 
+ =item inst
+ 
+@@ -2525,31 +2546,31 @@
+ 
+ =item imax
+ 
+-Max instantaneous power (uWatts). 
++Max instantaneous power (uWatts).
+ 
+ =item pcie
+ 
+-PCI-E connector power (uWatts). 
++PCI-E connector power (uWatts).
+ 
+ =item c2x3
+ 
+-2x3 connector power (uWatts). 
++2x3 connector power (uWatts).
+ 
+ =item c2x4
+ 
+-2x4 connector power (uWatts). 
++2x4 connector power (uWatts).
+ 
+ =item vccp
+ 
+-Core rail (uVolts). 
++Core rail (uVolts).
+ 
+ =item vddg
+ 
+-Uncore rail (uVolts). 
++Uncore rail (uVolts).
+ 
+ =item vddq
+ 
+-Memory subsystem rail (uVolts). 
++Memory subsystem rail (uVolts).
+ 
+ =back
+ 
+@@ -2570,19 +2591,19 @@
+    Type voltage
+    Instance "input-1"
+  </Data>
+- 
++
+  <Data "voltage-input-2">
+    RegisterBase 2
+    RegisterType float
+    Type voltage
+    Instance "input-2"
+  </Data>
+- 
++
+  <Host "modbus.example.com">
+    Address "192.168.0.42"
+    Port    "502"
+    Interval 60
+-   
++
+    <Slave 1>
+      Instance "power-supply"
+      Collect  "voltage-input-1"
+@@ -2815,7 +2836,7 @@
+     User          "username"
+     Password      "aef4Aebe"
+     Interval      30
+-    
++
+     <WAFL>
+       Interval 30
+       GetNameCache   true
+@@ -2823,12 +2844,12 @@
+       GetBufferCache true
+       GetInodeCache  true
+     </WAFL>
+-    
++
+     <Disks>
+       Interval 30
+       GetBusy true
+     </Disks>
+-    
++
+     <VolumePerf>
+       Interval 30
+       GetIO      "volume0"
+@@ -2838,7 +2859,7 @@
+       GetLatency "volume0"
+       IgnoreSelectedLatency false
+     </VolumePerf>
+-    
++
+     <VolumeUsage>
+       Interval 30
+       GetCapacity "vol0"
+@@ -2848,15 +2869,15 @@
+       GetSnapshot "vol3"
+       IgnoreSelectedSnapshot false
+     </VolumeUsage>
+-    
++
+     <Quota>
+       Interval 60
+     </Quota>
+-    
++
+     <Snapvault>
+       Interval 30
+     </Snapvault>
+-    
++
+     <System>
+       Interval 30
+       GetCPULoad     true
+@@ -3417,7 +3438,7 @@
+    # Export to an internal server
+    # (demonstrates usage without additional options)
+    Server "collectd.internal.tld"
+-   
++
+    # Export to an external server
+    # (demonstrates usage with signature options)
+    <Server "collectd.external.tld">
+@@ -7002,7 +7023,7 @@
+    Max 100
+    Satisfy "All"
+  </Match>
+- 
++
+  # Match if the value of any data source is outside the range of 0 - 100.
+  <Match "value">
+    Min   0
+@@ -7184,7 +7205,7 @@
+  <Target "replace">
+    # Replace "example.net" with "example.com"
+    Host "\\<example.net\\>" "example.com"
+- 
++
+    # Strip "www." from hostnames
+    Host "\\<www\\." ""
+  </Target>
+diff -Naru a/src/iwinfo.c b/src/iwinfo.c
+--- a/src/iwinfo.c	1969-12-31 19:00:00.000000000 -0500
++++ b/src/iwinfo.c	2013-09-01 17:53:51.506589324 -0400
+@@ -0,0 +1,150 @@
++/**
++ * collectd - src/iwinfo.c
++ * Copyright (C) 2011  Jo-Philipp Wich
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License as published by the
++ * Free Software Foundation; only version 2 of the License is applicable.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along
++ * with this program; if not, write to the Free Software Foundation, Inc.,
++ * 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
++ **/
++
++#include "collectd.h"
++#include "common.h"
++#include "plugin.h"
++#include "utils_ignorelist.h"
++
++#include <stdint.h>
++#include <iwinfo.h>
++
++#define PROCNETDEV "/proc/net/dev"
++
++static const char *config_keys[] = {
++       "Interface",
++       "IgnoreSelected"
++};
++static int config_keys_num = STATIC_ARRAY_SIZE (config_keys);
++
++static ignorelist_t *ignorelist = NULL;
++
++static int iwinfo_config(const char *key, const char *value)
++{
++       if (ignorelist == NULL)
++               ignorelist = ignorelist_create(1);
++
++       if (ignorelist == NULL)
++               return 1;
++
++       if (strcasecmp(key, "Interface") == 0)
++               ignorelist_add(ignorelist, value);
++       else if (strcasecmp(key, "IgnoreSelected") == 0)
++               ignorelist_set_invert(ignorelist, IS_TRUE(value) ? 0 : 1);
++       else
++               return -1;
++
++       return 0;
++}
++
++static void iwinfo_submit(const char *ifname, const char *type, int value)
++{
++       value_t values[1];
++       value_list_t vl = VALUE_LIST_INIT;
++
++       values[0].gauge = value;
++
++       vl.values = values;
++       vl.values_len = 1;
++
++       sstrncpy(vl.host, hostname_g, sizeof(vl.host));
++       sstrncpy(vl.plugin, "iwinfo", sizeof(vl.plugin));
++       sstrncpy(vl.plugin_instance, ifname, sizeof(vl.plugin_instance));
++       sstrncpy(vl.type, type, sizeof(vl.type));
++       /*sstrncpy(vl.type_instance, "", sizeof(vl.type_instance));*/
++
++       plugin_dispatch_values(&vl);
++}
++
++static void iwinfo_process(const char *ifname)
++{
++       int val;
++       char buf[IWINFO_BUFSIZE];
++       const struct iwinfo_ops *iw = iwinfo_backend(ifname);
++
++       /* does appear to be a wifi iface */
++       if (iw)
++       {
++               if (iw->bitrate(ifname, &val))
++                       val = 0;
++               iwinfo_submit(ifname, "bitrate", val * 1000);
++
++               if (iw->signal(ifname, &val))
++                       val = 0;
++               iwinfo_submit(ifname, "signal_power", val);
++
++               if (iw->noise(ifname, &val))
++                       val = 0;
++               iwinfo_submit(ifname, "signal_noise", val);
++
++               if (iw->quality(ifname, &val))
++                       val = 0;
++               iwinfo_submit(ifname, "signal_quality", val);
++
++               if (iw->assoclist(ifname, buf, &val))
++                       val = 0;
++               iwinfo_submit(ifname, "stations",
++                             val / sizeof(struct iwinfo_assoclist_entry));
++       }
++
++       iwinfo_finish();
++}
++
++static int iwinfo_read(void)
++{
++       char line[1024];
++       char ifname[128];
++       FILE *f;
++
++       f = fopen(PROCNETDEV, "r");
++       if (f == NULL)
++       {
++               char err[1024];
++               WARNING("iwinfo: Unable to open " PROCNETDEV ": %s",
++                       sstrerror(errno, err, sizeof(err)));
++               return -1;
++       }
++
++       while (fgets(line, sizeof(line), f))
++       {
++               if (!strchr(line, ':'))
++                       continue;
++
++               if (!sscanf(line, " %127[^:]", ifname))
++                       continue;
++
++               if (ignorelist_match(ignorelist, ifname))
++                       continue;
++
++               if (strstr(ifname, "mon.") || strstr(ifname, ".sta") ||
++                   strstr(ifname, "tmp.") || strstr(ifname, "wifi"))
++                       continue;
++
++               iwinfo_process(ifname);
++       }
++
++       fclose(f);
++
++       return 0;
++}
++
++void module_register(void)
++{
++       plugin_register_config("iwinfo", iwinfo_config, config_keys, config_keys_num);
++       plugin_register_read("iwinfo", iwinfo_read);
++}
+diff -Naru a/src/Makefile.am b/src/Makefile.am
+--- a/src/Makefile.am	2013-08-18 06:24:25.061973248 -0400
++++ b/src/Makefile.am	2013-09-01 17:54:45.282587435 -0400
+@@ -133,9 +133,9 @@
+ collectd_tg_DEPENDENCIES = libcollectdclient/libcollectdclient.la
+ 
+ 
+-pkglib_LTLIBRARIES = 
++pkglib_LTLIBRARIES =
+ 
+-BUILT_SOURCES = 
++BUILT_SOURCES =
+ CLEANFILES =
+ 
+ if BUILD_PLUGIN_AGGREGATION
+@@ -273,7 +273,7 @@
+ cpu_la_SOURCES = cpu.c
+ cpu_la_CFLAGS = $(AM_CFLAGS)
+ cpu_la_LDFLAGS = -module -avoid-version
+-cpu_la_LIBADD = 
++cpu_la_LIBADD =
+ if BUILD_WITH_LIBKSTAT
+ cpu_la_LIBADD += -lkstat
+ endif
+@@ -371,7 +371,7 @@
+ disk_la_SOURCES = disk.c
+ disk_la_CFLAGS = $(AM_CFLAGS)
+ disk_la_LDFLAGS = -module -avoid-version
+-disk_la_LIBADD = 
++disk_la_LIBADD =
+ if BUILD_WITH_LIBKSTAT
+ disk_la_LIBADD += -lkstat
+ endif
+@@ -382,7 +382,7 @@
+ disk_la_LIBADD += -lIOKit
+ endif
+ if BUILD_WITH_LIBSTATGRAB
+-disk_la_CFLAGS += $(BUILD_WITH_LIBSTATGRAB_CFLAGS)  
++disk_la_CFLAGS += $(BUILD_WITH_LIBSTATGRAB_CFLAGS)
+ disk_la_LIBADD += $(BUILD_WITH_LIBSTATGRAB_LDFLAGS)
+ endif
+ if BUILD_WITH_PERFSTAT
+@@ -530,6 +530,15 @@
+ collectd_DEPENDENCIES += irq.la
+ endif
+ 
++if BUILD_PLUGIN_IWINFO
++pkglib_LTLIBRARIES += iwinfo.la
++iwinfo_la_SOURCES = iwinfo.c
++iwinfo_la_LDFLAGS = -module -avoid-version
++iwinfo_la_LIBADD = -liwinfo
++collectd_LDADD += "-dlopen" iwinfo.la
++collectd_DEPENDENCIES += iwinfo.la
++endif
++
+ if BUILD_PLUGIN_JAVA
+ pkglib_LTLIBRARIES += java.la
+ java_la_SOURCES = java.c
+@@ -862,7 +871,7 @@
+ pkglib_LTLIBRARIES += olsrd.la
+ olsrd_la_SOURCES = olsrd.c
+ olsrd_la_LDFLAGS = -module -avoid-version
+-olsrd_la_LIBADD = 
++olsrd_la_LIBADD =
+ if BUILD_WITH_LIBSOCKET
+ olsrd_la_LIBADD += -lsocket
+ endif
+diff -Naru a/src/types.db b/src/types.db
+--- a/src/types.db	2013-08-18 06:24:25.085973632 -0400
++++ b/src/types.db	2013-09-01 17:55:39.338585534 -0400
+@@ -194,6 +194,7 @@
+ vs_memory		value:GAUGE:0:9223372036854775807
+ vs_processes		value:GAUGE:0:65535
+ vs_threads		value:GAUGE:0:65535
++stations		value:GAUGE:0:256
+ 
+ #
+ # Legacy types

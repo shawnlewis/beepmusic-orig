@@ -1,0 +1,5 @@
+#!/bin/bash
+
+socat PTY,link=pty_ser_a UNIX-LISTEN:unix_ser_a,fork & screen pty_ser_a
+kill %1
+

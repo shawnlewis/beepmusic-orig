@@ -1,0 +1,28 @@
+Import('root_env', 'env')
+
+# app_playnet
+app_playnet_test_src = ['apps/app_playnet_test.c']
+
+app_playnet_test = env.Program(
+    target='app_playnet_test',
+    source=app_playnet_test_src,
+    LIBS=['beep', 'pthread', 'ubox'])
+
+# Spotify SDK/application omitted from this source release.
+
+# TODO: Fix my build errors.
+#app_test_src = ['apps/app_test.c']
+#
+#app_test = env.Program(
+#    target='app_test',
+#    source=app_test_src,
+#    LIBS=['beep', 'curl', 'm', 'blobmsg_json'])
+
+# app_generic
+app_generic_src = ['apps/app_generic.c']
+
+app_generic = env.Program(
+    target='app_generic',
+    source=app_generic_src,
+    LIBS=['beep', 'mdns', 'dns_sd', 'curl',
+          'm', 'blobmsg_json', 'pthread', 'ubox'])

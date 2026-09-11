@@ -1,0 +1,181 @@
+Import('root_env', 'env')
+
+
+env.Append(CPPPATH=[
+    '#/lib/libds'
+])
+env.Append(
+    CPPPATH='$SYSROOT/usr/local/include/json-c',
+    efilt={'device_type':'virtual'})
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/json-c',
+    efilt={'device_type':'real'})
+
+libds_src = [
+    'lib/libds/avltree.c',
+    #'lib/libds/hashtbl.c',
+    #'lib/libds/heap.c',
+    #'lib/libds/parray.c',
+    'lib/libds/queue.c',
+    'lib/libds/set.c',
+    #'lib/libds/stack.c',
+]
+
+libbeep_src = [
+    'lib/beep/app.c',  # TODO: Should we move this into separate app lib?
+    'lib/beep/beep_data.c',
+    'lib/beep/beep_stream_ch.c',
+    'lib/beep/beep_ubus.c',
+    'lib/beep/beep_ubus_debug.c',
+    'lib/beep/beep_ubus_policies.c',
+    'lib/beep/beep_uloop.c',
+    'lib/beep/beep_curl.c',
+    'lib/beep/beeplib.c',
+    'lib/beep/client.c',
+    'lib/beep/config.c',
+    'lib/beep/ds.c',
+    'lib/beep/flags.c',
+    'lib/beep/gpiopoll.c',
+    'lib/beep/json.c',
+    'lib/beep/net.c',
+    'lib/beep/net_flags.c',
+    'lib/beep/registers.c',
+    'lib/beep/rotary.c',
+    'lib/beep/txt_record.c',
+    'lib/beep/uhelpers.c',
+]
+
+libbeeplog_src = [
+    'lib/beep/log.c',
+]
+
+libbeep_common_libs = [
+    'json-c',
+    'pthread',
+    'uci',
+    'ubox',
+    'ubus',
+    'blobmsg_json',
+    'curl',
+    'dns_sd'
+]
+
+libbeep = env.SharedLibrary(
+    target='libbeep',
+    source=libbeep_src + libbeeplog_src + libds_src,
+    LIBS=libbeep_common_libs)
+
+libbeep_test_src = [
+    'lib/beep/tests/main.c',
+    'lib/beep/tests/beeplib_test.c'
+]
+
+libbeep_test = env.Program(
+    target='libbeep_test',
+    source=libbeep_test_src,
+    LIBS=libbeep_common_libs + [libbeep, 'check', 'm', 'rt', 'pthread'])
+
+libbeeplog = env.StaticLibrary(
+    target='libbeeplog',
+    source=libbeeplog_src)
+
+libmdns_src = ['lib/beep/mdns.c']
+libmdns = env.SharedLibrary(
+    target='libmdns',
+    source=libmdns_src,
+    LIBS=['beep'])
+
+libi2c_src = ['lib/beep/i2c.c']
+libi2c = env.SharedLibrary(
+    target='libi2c',
+    source=libi2c_src)
+
+beep_flags_test_src = [
+    'lib/beep/flags_test_lib.c',
+    'lib/beep/flags_test_main.c'
+    ]
+
+beep_flags_test = env.Program(
+    target='beep_flags_test',
+    source=beep_flags_test_src,
+    LIBS=[libbeep])
+
+# TODO: Get rid of this library, and replace lib/audio/fifo* with libfifo.
+libaucom_src = [
+    'lib/audio/decode/audio_helper.c',
+    'lib/audio/fifo.c',
+    'lib/audio/fifo2.c'
+]
+
+libaucom = env.StaticLibrary(
+    target='libaucom',
+    source=libaucom_src)
+
+
+libfifo_src = ['lib/fifo/fifo.c']
+
+libfifo = env.StaticLibrary(
+    target='libfifo',
+    source=libfifo_src)
+
+
+fifo_test_src = ['lib/fifo/fifo_test.c']
+
+fifo_test = env.Program(
+    target='fifo_test',
+    source=fifo_test_src,
+    LIBS=[libfifo, 'pthread'])
+
+
+libdecode_play_src = ['lib/audio/decode/decode_play.c']
+
+libdecode_audio = env.StaticLibrary(
+    target='libdecode-audio',
+    source=libdecode_play_src)
+
+
+libplayer_src = [
+    'lib/audio/audio.c',
+    'lib/audio/decode/decode_aac.c',
+    'lib/audio/decode/decode_flac.c',
+    'lib/audio/decode/decode_mad.c',
+    'lib/audio/decode/decode_metadata.c',
+    'lib/audio/decode/decode_output.c',
+    'lib/audio/decode/decode_pcm.c',
+    'lib/audio/decode/decode_test.c',
+    'lib/audio/decode/decode_vorbis.c',
+    'lib/audio/fifo2.c',
+    'lib/audio/fixed_math.c',
+    'lib/audio/mqueue.c',
+    'lib/audio/streambuf.c',
+    'lib/beep/player_local.c'
+    ]
+
+libplayer = env.StaticLibrary(
+    target='libplayer',
+    source=libplayer_src)
+
+
+beepi2s_src = ['lib/audio/decode/decode_i2s_backend.c']
+
+beepi2s = env.Program(
+    target='beepi2s',
+    source=beepi2s_src,
+    LIBS=[libaucom, 'pthread', 'rt', 'beep'],
+    efilt={'arch': 'mips'})  # TODO: Change this to class filtering.
+
+
+beepalsa_src = ['lib/audio/decode/decode_alsa_backend.c']
+
+beepalsa = env.Program(
+    target='beepalsa',
+    source=beepalsa_src,
+    LIBS=[libaucom, 'pthread', 'asound', 'beep'],
+    efilt={'target': 'host'})
+
+beepdummy_src = ['lib/audio/decode/decode_dummy_backend.c']
+
+beepdummy = env.Program(
+    target='beepdummy',
+    source=beepdummy_src,
+    LIBS=[libaucom, 'pthread', 'rt', 'beep'])

@@ -1,0 +1,2 @@
+CONFIG_CMDLINE="board=TL-MR3020 root=/dev/nfs rw ip=:::::eth0:dhcp nfsroot=192.168.1.100:/home/shawn/beeproot noinitrd nfsrootdebug console=ttyATH0,115200"
+CONFIG_CMDLINE_OVERRIDE=y

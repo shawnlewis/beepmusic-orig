@@ -1,0 +1,396 @@
+<html>
+    <head>
+        <style type="text/css">
+            body {
+                font-size: 16px;
+            }
+
+            span.label {
+                display: inline-block;
+                text-align: right;
+                width: 150px;
+                margin-right: 10px;
+            }
+
+            input {
+                font-family: courier;
+                width: 400px;
+            }
+
+            #chk_autoclear {
+                width: 20px;
+            }
+
+            textarea {
+                font-family: courier;
+                width: 400px;
+                height: 100px;
+            }
+
+            div#_output {
+                font-size: 12px;
+                font-family: courier;
+                background-color: #EEE;
+                width: 100%;
+                min-height:250px;
+                max-height:250px;
+                overflow: auto;
+            }
+            #form_x {
+                height: 150px;
+            }
+
+            td {
+                text-align: center;
+                vertical-align: top;
+            }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+        <title>CASTCHAT TESTER</title>
+    </head>
+    <body>
+        <h1>Castchat Test Tool</h1>
+        <!-- Basic usage notes -->
+        <h3>Basic usage</h3>
+        <ul>
+        <li>Fill out the base URL, app name, namespace, and user-agent fields</li>
+        <li>Press <em>Connect</em> to open the websocket connection. <em>Disconnect</em> to close.</li>
+        <li>Press <em>Send Hello</em> to send the handshake and bind to the app with <em>user-agent</em> information.</li>
+        <li><b>YOU MUST SEND HELLO WITHIN FIVE SECONDS UPON CONNECT</b></li>
+        <li><em>Send Message</em> will send the contents of the message field</li>
+        <li>Select a message on the left of the messages textarea to automatically populate it.</li>
+        </ul>
+
+        <!-- Text Entry -->
+        <span class="label">Castchat base URL</span><input class="ws_data" id="form_url" type="text" name="base_url" value="ws://beepdev:32336/castchat/"><br>
+        <span class="label">App name</span><input class="ws_data" id="form_app" type="text" name="app_name" value="sample_playlist"><br>
+        <span class="label">Namespace</span><input class="ws_data" id="form_namespace" type="text" name="namespace" value="urn:x-cast:com.google.cast.media"><br>
+        <span class="label">User-Agent</span><input class="ws_data" id="form_agent" type="text" name="agent" value="Castchat Tester/1.0"><br>
+
+        <!-- Messages --> 
+        <table>
+            <tr>
+                <td>
+        <span class="label">Message</span><textarea class="ws_data" id="form_x" name="msg_x" ></textarea>
+                </td>
+                <td> 
+        <button id="btn_msg_playlist_load" class="btn_msg">Playlist load</button><br>
+        <textarea hidden id="btn_msg_playlist_load_val">
+{"type": "LOAD",
+ "requestId": "5",
+ "media": {
+    "contentId": "http://shawnlewis.me/playlist.m3u",
+    "streamType": "bla",
+    "contentType": "bla"
+}}
+</textarea>
+        <button id="btn_msg_playlist_play" class="btn_msg">Play</button><br>
+        <textarea hidden id="btn_msg_playlist_play_val">
+{"type": "PLAY",
+ "requestId": "5",
+ "mediaSessionId": 14
+}
+        </textarea>
+
+        <button id="btn_msg_playlist_pause" class="btn_msg">Pause</button><br>
+        <textarea hidden id="btn_msg_playlist_pause_val">
+{"type": "PAUSE",
+ "requestId": "5",
+ "mediaSessionId": 14
+}
+        </textarea>
+
+        <button id="btn_msg_playlist_volume" class="btn_msg">Volume</button><br>
+        <textarea hidden id="btn_msg_playlist_volume_val">
+{"type": "VOLUME",
+ "requestId": "5",
+ "mediaSessionId": 14,
+ "volume": {
+   "level": 0.634
+}}
+        </textarea>
+            </td></tr>
+        </table>
+
+        <br>
+        <button id="btn_connect">Connect</button>
+        <button id="btn_hello">Send Hello</button>
+        <button id="btn_send_message">Send Message</button>
+        <button id="btn_disconnect">Disconnect</button>
+        <button id="btn_hammer">Hammer Time!</button>
+
+        <p>Active connections: <span id="activeConnections">0</span></p>
+
+        <!-- Output -->
+        <h3>Output:</h3>
+        <div id="_output"><pre id="output"></pre></div>
+        <button id="btn_clear">Clear Output Buffer</button>
+        <input type="checkbox" id="chk_autoclear" checked="true">Auto-clear
+    </body>
+    <script type="text/javascript"> 
+        if (!String.format) {
+            String.format = function(format) {
+                var args = Array.prototype.slice.call(arguments, 1);
+                return format.replace(/{(\d+)}/g, function(match, number) { 
+                        return typeof args[number] != 'undefined'
+                        ? args[number] 
+                        : match
+                        ;
+                        });
+            };
+        }
+
+        var hello_format = "CASTCHAT/1.0\n" +
+            "Content-Length: 0\n" +
+            "Namespace: castchat.org:control\n" +
+            "Type: Hello\n"  +
+            "User-Agent: {0}\n" +
+            "\n";
+
+        var msg_format = "CASTCHAT/1.0\n" +
+            "Namespace: {0}\n" +
+            "Content-Length: {1}\n" +
+            "\n" +
+            "{2}\n" +
+            "\n";
+
+        var activeConnections = 0;
+        function updateActiveConnections() {
+            $('#activeConnections').text(activeConnections.toString());
+        }
+
+        function Connection() {
+            this._ws = null;
+        }
+        Connection.prototype.connect = function(url) {
+            if (this._ws) {
+                print('aready connected');
+                return;
+            }
+            this._ws = new WebSocket(url);
+
+            var self = this;
+            //print('Connecting');
+            activeConnections += 1;
+            updateActiveConnections();
+
+            print("Connecting");
+            this._ws.onopen = function() {
+                print("Connection established");
+            };
+
+            this._ws.onclose = function(event) {
+                print("Connection closed: " + event.reason + " (" + event.code + ")");
+                self._onDisconnect();
+            };
+
+            this._ws.onerror = function(event) {
+                print("ERROR"); // Improve this?
+                self._onDisconnect();
+            };
+
+            this._ws.onmessage = function(event) {
+                print("Received:\n" + event.data);
+            };
+        }
+        Connection.prototype.disconnect = function() {
+            if (!this._ws) {
+                print('Connection not opened for closing');
+            } else {
+                print('Disconnecting');
+                this._ws.close();
+                this._onDisconnect();
+            }
+        }
+        Connection.prototype.send = function(payload) {
+            if(!this._ws) {
+                print('ERROR: No active connection.');
+            } else {
+                print('Sending:\n' + payload);
+                this._ws.send(payload);
+            }
+        }
+        Connection.prototype.sendHello = function(useragent) {
+            var payload = String.format(hello_format, useragent);
+            this.send(payload);
+        }
+        Connection.prototype.sendMsg = function(namespace, msg) {
+            var payload = String.format(msg_format, namespace, msg.length, msg);
+            this.send(payload);
+        }
+        Connection.prototype.connected = function() {
+            return this._ws != null && this._ws.readyState == 1;
+        }
+        Connection.prototype._onDisconnect = function() {
+            if (this._ws) {
+                this._ws = null;
+                activeConnections -= 1;
+                updateActiveConnections();
+            }
+        }
+
+        function HammerAgent(id, url, messages) {
+            this._id = id.toString();
+            this._url = url;
+            this._messages = messages;
+            this._conn = new Connection();
+            this._helloSent = false;
+        }
+        HammerAgent.prototype.log = function(msg) {
+            print('Agent ' + this._id + ': ' + msg);
+        }
+        HammerAgent.prototype.doSomething = function() {
+            if (!this._conn.connected() && Math.random() < 0.02) {
+                this.log('Connecting');
+                this._conn.connect(this._url);
+                var helloTime = Math.random() * 7000;
+                var self = this;
+                setTimeout(function() {
+                    if (self._conn.connected()) {
+                        self.log('Sending hello');
+                        self._conn.sendHello('HammerTime!');
+                        self._helloSent = true;
+                    }
+                }, helloTime);
+            } else if (this._conn.connected() && Math.random() < 0.004) {
+                this.log('Disconnecting');
+                this._conn.disconnect();
+                this._helloSent = false;
+            } else if (this._conn.connected() && this._helloSent
+                    && Math.random() < 0.20) {
+                this.log('Sending message');
+                var message = this._messages[
+                    Math.floor(Math.random() * this._messages.length)];
+                this._conn.sendMsg(message.ns, message.msg);
+            }
+        }
+
+        var connection = new Connection();
+        var _lines = 0;
+
+        function print(str) {
+            if($('#chk_autoclear')[0].checked && ++_lines > 2000) {
+                _lines = 0;
+                $('#output').empty();
+                print("--------------------------- AUTO CLEAR ---------------------------");
+            } 
+
+            var date = new Date();
+            $('#output').append(date + ': ' + str + '<br>');
+            var outputDiv = $('#_output')[0];
+            outputDiv.scrollTop = outputDiv.scrollHeight;
+        }
+
+        function sendHello() {
+            var useragent = $('#form_agent').val();
+            connection.sendHello(useragent);
+        }
+
+        function sendMsg(msg) {
+            var namespace = $('#form_namespace').val();
+            connection.sendMsg(namespace, msg);
+        }
+
+        var hammering = false;
+        var agents = [];
+        function startHammer(url) {
+            hammering = true;
+            var messages = [
+                {'ns': 'echo', 'msg': 'echo me'}]
+
+            for (i=0; i<20; i++) {
+                agents.push(new HammerAgent(i, url, messages));
+            }
+            var interval = setInterval(function() {
+                if (!hammering) {
+                    clearInterval(interval);
+                }
+                for (i=0; i<agents.length; i++) {
+                    agents[i].doSomething();
+                }
+            }, 50);
+        }
+        function stopHammer() {
+            hammering = false;
+            for (i=0; i<agents.length; i++) {
+                agents[i]._conn.disconnect();
+            }
+        }
+
+        function updateFromAddressBar() {
+            if(window.location.search.length == 0) {
+                return;
+            }
+
+            var queryParams = window.location.search.substring(1).split("&");
+            for(var p = 0; p < queryParams.length; p++) {
+                var paramElements = queryParams[p].split("=");
+                var selector = "#" + paramElements[0];
+                $(selector).val(decodeURIComponent(paramElements[1]));
+            }
+        }
+
+        function updateAddressBar() {
+            var params = {
+                form_url: $('#form_url').val(),
+                form_app: $('#form_app').val(),
+                form_namespace: $('#form_namespace').val(),
+                form_agent: $('#form_agent').val(),
+            };
+
+            var queryParams = [];
+            for(var p in params) {
+                queryParams.push(encodeURIComponent(p) + "=" + encodeURIComponent(params[p]));
+            }
+
+            var queryString = queryParams.join("&");
+
+            window.history.pushState("string", "Title", window.location.pathname + "?" + queryString);
+        }
+
+        $(document).ready(function() {
+            // Hook up buttons!
+            $('.btn_msg').on('click', function() {
+                var this_id = $(this).attr('id');
+                $('#form_x').val($('#' + this_id + '_val').val());
+            });
+            $('#btn_connect').on('click', function() {
+                var url = $('#form_url').val() + $('#form_app').val();
+                connection.connect(url);
+            });
+
+            $('#btn_disconnect').on('click', function() {
+                connection.disconnect();
+            });
+
+            $('#btn_hammer').on('click', function() {
+                if (!hammering) {
+                    var url = $('#form_url').val() + 'echo';
+                    startHammer(url);
+                } else {
+                    stopHammer();
+                }
+            });
+
+            $('#btn_hello').on('click', function() {
+                sendHello();
+            });
+
+            $('#btn_send_message').on('click', function() {
+                sendMsg($('#form_x').val());
+            });
+
+            $('#btn_clear').on('click', function() {
+                $('#output').empty();
+            });
+
+            // Populate form fields w/ query string!
+            updateFromAddressBar();
+
+            // Hook up address bar update! 
+            $('.ws_data').change(function(ev) {
+                updateAddressBar();
+            });
+        });
+    </script>
+</html>

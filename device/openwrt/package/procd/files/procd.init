@@ -1,0 +1,24 @@
+#!/bin/sh /etc/rc.common
+
+START=11
+
+start_stop() {
+	start-stop-daemon $1 -b -m -p /var/run/procd.pid -x /sbin/procd
+}
+
+start() {
+	exec 1>/dev/console  ;# redirect stdout to serial console
+	exec 2>/dev/console  ;# redirect stderr to serial console
+
+	echo "procd start()"
+	start_stop -S
+	echo "procd start() done"
+}
+
+reload() {
+	return
+}
+
+stop() {
+	start_stop -K
+}

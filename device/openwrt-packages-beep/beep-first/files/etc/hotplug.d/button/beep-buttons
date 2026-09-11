@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# Note on our board released and pressed are inverted for some reason.
+if [ "$ACTION" = "released" ]; then
+    touch "/tmp/beep/button_$BUTTON"
+fi

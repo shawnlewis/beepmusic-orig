@@ -1,0 +1,10 @@
+--- a/configure
++++ b/configure
+@@ -16384,6 +16384,7 @@ rm -f core *.core core.conftest.* gmon.o
+ fi
+ 
+   fi
++as_cv_unaligned_access=no
+   { $as_echo "$as_me:${as_lineno-$LINENO}: result: $as_cv_unaligned_access" >&5
+ $as_echo "$as_cv_unaligned_access" >&6; }
+   if test "$as_cv_unaligned_access" = "yes"; then

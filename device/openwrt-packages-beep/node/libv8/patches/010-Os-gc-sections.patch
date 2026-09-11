@@ -1,0 +1,36 @@
+--- a/build/common.gypi
++++ b/build/common.gypi
+@@ -105,6 +105,8 @@
+     # Interpreted regexp engine exists as platform-independent alternative
+     # based where the regular expression is compiled to a bytecode.
+     'v8_interpreted_regexp%': 0,
++
++    'v8_gc_sections%': 'false',
+   },
+   'target_defaults': {
+     'conditions': [
+@@ -188,6 +190,9 @@
+             'target_conditions': [
+               ['_toolset=="target"', {
+                 'conditions': [
++                  ['v8_gc_sections=="true"', {
++                    'ldflags': ['-Wl,--gc-sections'],
++                  }],
+                   ['v8_target_arch=="mipsel"', {
+                     'cflags': ['-EL'],
+                     'ldflags': ['-EL'],
+@@ -382,12 +387,12 @@
+             or OS=="android"', {
+             'cflags!': [
+               '-O2',
+-              '-Os',
++              '-O3',
+             ],
+             'cflags': [
+               '-fdata-sections',
+               '-ffunction-sections',
+-              '-O3',
++              '-Os',
+             ],
+             'conditions': [
+               [ 'gcc_version==44 and clang==0', {

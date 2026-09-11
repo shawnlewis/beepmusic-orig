@@ -1,0 +1,26 @@
+#!/bin/sh
+
+[ "$(uci get beep_device.main.device_id)" != "UNCONFIGURED" ] && exit 0
+
+MAC6=$(cat /sys/class/ieee80211/phy0/macaddress | sed "s/://g" | tail -c 7)
+if [ -z "$MAC6" ]; then
+    exit 1
+fi
+
+DEVICE_ID="beep-$MAC6"
+
+uci -q batch <<-EOF >/dev/null
+    set beep_device.main.device_id=$DEVICE_ID
+    commit beep_device
+
+    set beep_data.main.device_name="Beep $MAC6"
+    commit beep_data
+
+    set system.@system[0].hostname=$DEVICE_ID
+    commit system
+
+    set wireless.setup_mode.ssid="Beep Setup $MAC6"
+    commit wireless
+EOF
+
+exit 0

@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ -z "$1" ]
+then
+    echo "Stops a beep device"
+    echo "Usage: $0 <host>"
+else
+    HOST=$1
+    CMD="/etc/init.d/beepmanager stop && sleep 1 && ps -o comm,pid,pgid | grep playnet | awk '{print -\$3}' | xargs kill -9"
+    ssh $HOST $CMD
+fi

@@ -1,0 +1,17 @@
+Import('root_env', 'env')
+
+
+athplay_src = ['athplay/athplay.c']
+
+athplay = env.Program(
+    target='athplay',
+    source=athplay_src,
+    efilt={'device_type':'real'})
+
+
+i2sconf_src = ['athplay/i2sconf.c']
+
+i2sconf = env.Program(
+    target='i2sconf',
+    source=i2sconf_src,
+    efilt={'device_type':'real'})

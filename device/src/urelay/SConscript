@@ -1,0 +1,13 @@
+Import('root_env', 'env')
+
+
+urelay_src = [
+    'urelay/urelay-client.c',
+    'urelay/urelay-server.c',
+    'urelay/urelay.c',
+]
+
+urelay = env.Program(
+    target='urelay',
+    source=urelay_src,
+    LIBS=['beep', 'ubox', 'ubus', 'blobmsg_json'])

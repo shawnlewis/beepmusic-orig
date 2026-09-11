@@ -1,0 +1,7 @@
+#!/bin/sh
+
+echo "Running beepupdate"
+/beep/beepupdate
+
+echo "Running beepmanager"
+/etc/init.d/beepmanager start

@@ -1,0 +1,12 @@
+#!/bin/sh
+
+. /beep/env.sh
+
+/usr/bin/athclkchk > /dev/null 2>&1 &
+
+[ ! -r /tmp/dirty.mp3 ] && wget -P /tmp http://pi/dirty.mp3 > /dev/null 2>&1
+
+while :; do
+    lua /beep/platform/app_playfile.lua /tmp/dirty.mp3 > /dev/null 2>&1 &
+    sleep 270
+done

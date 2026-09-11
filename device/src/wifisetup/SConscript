@@ -1,0 +1,30 @@
+Import('root_env', 'env')
+
+
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/libnl3',
+    LIBNL=['nl-genl-3', 'nl-3'],
+    efilt={'device_type':'virtual'})
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/libnl-tiny',
+    LIBNL=['nl-tiny'],
+    efilt={'device_type':'real'})
+
+env.Append(CPPDEFINES={
+    '_GNU_SOURCE': None
+})
+
+wifisetup_src = [
+    'wifisetup/crt.c',
+    'wifisetup/daemon.c',
+    'wifisetup/main.c',
+    #'wifisetup/netbe_debug.c',
+    'wifisetup/netbe_nl.c',
+    'wifisetup/netbe_uci.c',
+    'wifisetup/util.c'
+]
+
+wifisetup = env.Program(
+    target='wifisetup',
+    source=wifisetup_src,
+    LIBS=['beepnl', 'beep', 'ubox', 'ubus', 'uci', 'pthread', '$LIBNL'])

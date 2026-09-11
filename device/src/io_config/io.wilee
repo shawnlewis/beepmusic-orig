@@ -1,0 +1,108 @@
+##### inputs
+
+config input 'button1'
+    option type 'gpio_button'
+    option gpio_button_gpio 11
+    option gpio_button_active_low 1
+
+config input 'button2'
+    option type 'gpio_button'
+    option gpio_button_gpio 28
+    option gpio_button_active_low 1
+
+
+### audio mode actions
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button1'
+    option action 'toggle_play_pause'
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button2'
+    option action 'skip'
+
+config input_action
+    option mode 'starting'
+    option trigger 'hold'
+    option input 'button1'
+    option hold_time 5000
+    option action 'enter_wifisetup_mode'
+
+config input_action
+    option mode 'audio'
+    option trigger 'hold'
+    option input 'button1'
+    option hold_time 5000
+    option action 'enter_wifisetup_mode'
+
+
+##### outputs
+
+config output 'led1'
+    option type 'gpio_led'
+    option gpio_led_gpio 15
+
+config output 'led2'
+    option type 'gpio_led'
+    option gpio_led_gpio 16
+
+config output 'led3'
+    option type 'gpio_led'
+    option gpio_led_gpio 17
+
+### output actions
+
+config output_action
+    option trigger 'starting'
+    option output 'led1'
+    option view 'on'
+
+config output_action
+    option trigger 'starting'
+    option output 'led2'
+    option view 'on'
+
+config output_action
+    option trigger 'starting'
+    option output 'led3'
+    option view 'on'
+
+config output_action
+    option trigger 'audio_playing'
+    option output 'led1'
+    option view 'blink'
+    option blink_period_ms 1000
+
+config output_action
+    option trigger 'audio_playing'
+    option output 'led2'
+    option view 'blink'
+    option blink_period_ms 900
+
+config output_action
+    option trigger 'audio_playing'
+    option output 'led3'
+    option view 'blink'
+    option blink_period_ms 800
+
+config output_action
+    option trigger 'wifisetup'
+    option output 'led1'
+    option view 'blink'
+    option blink_period_ms 2000
+
+config output_action
+    option trigger 'wifisetup'
+    option output 'led2'
+    option view 'blink'
+    option blink_period_ms 2000
+
+config output_action
+    option trigger 'wifisetup'
+    option output 'led3'
+    option view 'blink'
+    option blink_period_ms 2000

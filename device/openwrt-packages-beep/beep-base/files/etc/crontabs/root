@@ -1,0 +1,2 @@
+# Run beepupdate every two minutes.
+*/2 * * * * /beep/pseudorandomsleep 0 120; /beep/beepupdate --check-unless-force update > /dev/null

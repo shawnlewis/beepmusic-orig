@@ -1,0 +1,49 @@
+List of things not covered in build or scripts to run the qemu malta target.
+## Build disk image (1GB).  This will show up as /opt
+$ dd if=/dev/zero of=disk.img bs=1M count=1024
+$ fdisk disk.img
+: n (use defaults)
+: w
+$ sudo losetup -o 1048576 /dev/loop0 disk.img
+$ sudo mkfs.ext3 /dev/loop0
+$ sudo losetup -d /dev/loop0
+$ sudo mount -o loop,offset=1048576 disk.img optmnt
+<copy anything you need; ubuntu requires you to sudo>
+$ sudo umount optmnt
+
+### To run
+## Apply the patch and build openwrt
+
+## Add this to your hosts ~/.screenrc
+# Make xterm scrolling work properly with screen.
+termcapinfo xterm-256color|xterm-color|xterm|xterms|xs|rxvt ti@:te@
+
+## Link to kernel image
+$ ln -s ../../openwrt/bin/malta/openwrt-malta-be-vmlinux.elf
+
+## In one terminal.  This will be linked to the emulated serial and
+## is persistent between qemu restarts.  Need to run first.
+$ ./ser_a
+
+## In another terminal.  This will be the qemu monitor.
+$ ./start
+(qemu) c
+
+## TODO:
+# Be able to install ipk files directly on the host to the disk image
+# Figure out how to get overlayfs working
+# Get networking up
+
+## Overlayfs notes:
+umount /opt
+mount -t ext3 /dev/sda1 /overlay
+mount -o noatime,lowerdir=/,upperdir=/overlay -t overlayfs overlayfs:/overlay /mnt
+# /mnt now has for / with /overlay (/dev/sda1) on top of it
+chroot /mnt
+# / is now old / and old /overlay but now new /overlay is empty.  This is
+# required since certain writes will go to /overlay to ensure they are
+# written to the big storage device not the small one or rom.  If
+# /etc/config/fstab points to /overlay instead of /mnt it gets mounted
+# as /tmp/overlay-disabled.  Unsure why but it could be because every boot
+# is considered firstboot.
+

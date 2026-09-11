@@ -1,0 +1,12 @@
+config system
+    option hostname	'beep-fresh'
+    option timezone	'UTC'
+    option log_ip 'beta.beepdevices.com'
+    option log_port 5140
+
+config timeserver ntp
+	list server	0.openwrt.pool.ntp.org
+	list server	1.openwrt.pool.ntp.org
+	list server	2.openwrt.pool.ntp.org
+	list server	3.openwrt.pool.ntp.org
+	option enable_server 0

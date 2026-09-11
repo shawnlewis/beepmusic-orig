@@ -1,0 +1,9 @@
+Import('root_env', 'env')
+
+
+data_test_src=['data_test/data_test.c']
+
+data_test = env.Program(
+    target='data_test',
+    source=data_test_src,
+    LIBS=['beep', 'ubox'])

@@ -1,0 +1,29 @@
+Import('root_env', 'env')
+
+
+env.Append(CPPPATH='#/iomcu/common')
+
+i2c_obj = env.Object(
+    target='iomcu/ioutil/i2c.o',
+    source='iomcu/ioutil/i2c.c')
+
+ioutil_src = [
+    'iomcu/common/iomcu_checksum.c',
+    'iomcu/ioutil/ioutil.c',
+    'iomcu/ioutil/i2c.o'
+]
+
+ioutil = env.Program(
+    target='ioutil',
+    source=ioutil_src,
+    efilt={'device_type':'real'})
+
+i2c_encdata_src = [
+    'iomcu/ioutil/i2c_encdata.c',
+    'iomcu/ioutil/i2c.o'
+]
+
+i2c_encdata = env.Program(
+    target='i2c-encdata',
+    source=i2c_encdata_src,
+    efilt={'device_type':'real'})

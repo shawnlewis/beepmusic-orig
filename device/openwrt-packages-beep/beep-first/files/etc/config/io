@@ -1,0 +1,110 @@
+##### inputs
+
+config input 'button'
+    option type 'beepdial_knob_button'
+
+
+config input 'knob'
+    option type 'beepdial_knob'
+
+
+### audio mode actions
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button'
+    option action 'toggle_play_pause'
+
+config input_action
+    option mode 'audio'
+    option trigger 'multitap'
+    option input 'button'
+    option multitap_count 2
+    option action 'skip'
+
+config input_action
+    option mode 'audio'
+    option trigger 'multitap'
+    option input 'button'
+    option multitap_count 3
+    option action 'magic'
+
+config input_action
+    option mode 'audio'
+    option trigger 'turn'
+    option input 'knob'
+    option turn_delta 0
+    option action 'adjust_volume'
+
+config input_action
+    option mode 'starting'
+    option trigger 'hold'
+    option input 'button'
+    option hold_time 5000
+    option action 'enter_wifisetup_mode'
+
+config input_action
+    option mode 'audio'
+    option trigger 'hold'
+    option input 'button'
+    option hold_time 5000
+    option action 'enter_wifisetup_mode'
+
+config input_action
+    option mode 'wifisetup'
+    option trigger 'hold'
+    option input 'button'
+    option hold_time 5000
+    option action 'exit_wifisetup_mode'
+
+
+##### outputs
+
+config output 'led_ring'
+    option type 'beepdial_led_ring24'
+
+
+### output actions
+
+config output_action
+    option trigger 'starting'
+    option output 'led_ring'
+    option view 'nick'
+    option nick_period_ms 1400
+
+config output_action
+    option trigger 'audio_working'
+    option output 'led_ring'
+    option view 'spokes'
+    option spokes_count 3
+    option spokes_speed 1
+
+config output_action
+    option trigger 'audio_playing'
+    option output 'led_ring'
+    option view 'twinkle'
+
+config output_action
+    option trigger 'audio_paused'
+    option output 'led_ring'
+    option view 'fade'
+
+config output_action
+    option trigger 'volume'
+    option output 'led_ring'
+    option view 'show_volume'
+
+config output_action
+    option trigger 'magic'
+    option output 'led_ring'
+    option view 'spokes'
+    option spokes_count 6
+    option spokes_speed 0.7
+
+config output_action
+    option trigger 'wifisetup'
+    option output 'led_ring'
+    option view 'spokes'
+    option spokes_count 1
+    option spokes_speed 0.6

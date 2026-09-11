@@ -1,0 +1,17 @@
+menu "Configuration"
+	depends on PACKAGE_beep-config
+
+# Target configuration
+config BEEP_TARGET
+	string
+	prompt "scons build target"
+	default "beeptwo"
+
+config BEEP_COMPILE_LUA
+	bool
+	prompt "Compile lua files"
+	default n
+	help
+		 Sets scons flags to compile Beep lua files.
+
+endmenu

@@ -1,0 +1,18 @@
+diff -NaurZ a/ipkg-build b/ipkg-build
+--- a/ipkg-build	2014-10-15 15:25:09.069449594 -0700
++++ b/ipkg-build	2014-10-15 15:25:25.845450192 -0700
+@@ -232,9 +232,13 @@
+ # Preserve permissions (-p) when creating data.tar.gz as non-root user
+ ( cd $pkg_dir && $TAR $ogargs -X $tmp_dir/tarX --format=gnu -czpf $tmp_dir/data.tar.gz . )
+ 
+-installed_size=`stat -c "%s" $tmp_dir/data.tar.gz`
++# Create size.tar.gz in a deterministic way to get consistent installed-size.
++( cd $pkg_dir && $FIND . | sort | $TAR $ogargs -X $tmp_dir/tarX --format=gnu -cp --no-recursion --mtime="Jan 1 1970 00:00" -T - | gzip > $tmp_dir/size.tar.gz )
++
++installed_size=`stat -c "%s" $tmp_dir/size.tar.gz`
+ sed -i -e "s/^Installed-Size: .*/Installed-Size: $installed_size/" \
+ 	$pkg_dir/$CONTROL/control
++rm $tmp_dir/size.tar.gz
+ 
+ ( cd $pkg_dir/$CONTROL && $TAR $ogargs --format=gnu -czf $tmp_dir/control.tar.gz . )
+ rm $tmp_dir/tarX

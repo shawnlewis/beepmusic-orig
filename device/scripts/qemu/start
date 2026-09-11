@@ -1,0 +1,15 @@
+#!/bin/bash
+
+SERIAL_ARGS=""
+
+if [ -S unix_ser_a ]; then
+    SERIAL_ARGS+=" -serial unix:unix_ser_a"
+fi
+if [ -S unix_ser_b ]; then
+    SERIAL_ARGS+=" -serial unix:unix_ser_b"
+fi
+
+#qemu-system-i386 -L . -nographic -monitor stdio -S -hda fat:fs0 $SERIAL_ARGS
+qemu-system-mips -kernel openwrt-malta-be-vmlinux.elf -M malta -cpu 24Kc -nographic \
+    -S -monitor stdio -m 256 -hda disk.img $SERIAL_ARGS
+

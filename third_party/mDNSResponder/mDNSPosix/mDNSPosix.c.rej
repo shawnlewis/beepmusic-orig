@@ -1,0 +1,11 @@
+--- mDNSPosix/mDNSPosix.c 2012-04-17 19:01:01.000000000 -0400
++++ mDNSPosix/mDNSPosix.c 2013-11-11 22:55:34.774184431 -0500
+@@ -136,7 +136,7 @@
+ 
+ // mDNS core calls this routine when it needs to send a packet.
+ mDNSexport mStatus mDNSPlatformSendUDP(const mDNS *const m, const void *const msg, const mDNSu8 *const end,
+-                                       mDNSInterfaceID InterfaceID, UDPSocket *src, const mDNSAddr *dst,
++                                       mDNSInterfaceID InterfaceID, UDPSocket *src, const mDNSAddr *dst,
+                                        mDNSIPPort dstPort, mDNSBool useBackgroundTrafficClass)
+ {
+     int err = 0;

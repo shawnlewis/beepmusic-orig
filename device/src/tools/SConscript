@@ -1,0 +1,85 @@
+Import('root_env', 'env')
+
+
+devmem_src = ['tools/devmem.c']
+
+devmem = env.Program(
+    target='devmem',
+    source=devmem_src)
+
+
+freemem_src = ['tools/freemem.c']
+
+freemem = env.Program(
+    target='freemem',
+    source=freemem_src)
+
+vorbisperf_src = ['tools/vorbisperf.c']
+
+vorbisperf = env.Program(
+    target='vorbisperf',
+    source=vorbisperf_src,
+    LIBS=['vorbisidec'])
+
+burn_src = ['tools/burn.c']
+
+burn = env.Program(
+    target='burn',
+    source=burn_src,
+    LIBS=['beeplog', 'm'])
+
+blobmsg_src = ['tools/blobmsg.c']
+
+blobmsg = env.Program(
+    target='blobmsg',
+    source=blobmsg_src,
+    LIBS=['ubox'])
+
+netmtrace_src = ['tools/netmtrace.c']
+
+netmtrace_env = env.Clone()
+netmtrace_env.FilterOut(CFLAGS=['-mips16', '-minterlink-mips16'])
+netmtrace = netmtrace_env.SharedLibrary(
+    target='netmtrace',
+    source=netmtrace_src,
+    LIBS=['dl'])
+
+bcore_src = ['tools/bcore.c']
+
+bcore = env.Program(
+    target='bcore',
+    source=bcore_src,
+    LIBS=['beeplog', 'uci', 'curl'])
+
+artdump_src = ['tools/artdump/artdump.c']
+
+artdump = env.Program(
+    target='artdump',
+    source=artdump_src)
+
+pseudorandomsleep_src = ['tools/pseudorandomsleep.c']
+
+pseudorandomsleep = env.Program(
+    target='pseudorandomsleep',
+    source=pseudorandomsleep_src,
+    LIBS=[])
+
+unlockmtds_src = ['tools/unlockmtds.c']
+
+unlockmtds = env.Program(
+    target='unlockmtds',
+    source=unlockmtds_src,
+    LIBS=[],
+    efilt={'device_type':'real'})
+
+#recv = env.Program(
+#    target='purinrecv',
+#    source=['tools/purinrecv.c'],
+#    LIBS=['pgm'],
+#    efilt={'device_type':'real'})
+#
+#send = env.Program(
+#    target='purinsend',
+#    source=['tools/purinsend.c'],
+#    LIBS=['pgm', 'pthread'],
+#    efilt={'device_type':'real'})

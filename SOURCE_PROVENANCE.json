@@ -1,0 +1,63 @@
+[
+  {
+    "repo": "beep",
+    "commit": "52321977f78284885400cba48163493babe1ff3b",
+    "ref": "v0.9.12r2",
+    "destination": "."
+  },
+  {
+    "repo": "libubox",
+    "commit": "f6a0bab73f629b3ffa3019c64260060dbb731a75",
+    "destination": "device/libubox"
+  },
+  {
+    "repo": "luci",
+    "commit": "169af9b513f2fed4c0c05f0f91305c3b5855aace",
+    "destination": "device/luci"
+  },
+  {
+    "repo": "openwrt",
+    "commit": "a473a2c55c22e1bc93f5a92ea6d4b622fd0e6285",
+    "destination": "device/openwrt"
+  },
+  {
+    "repo": "openwrt-packages",
+    "commit": "879d5b24d34b15668c9a774185d163365b8f9922",
+    "destination": "device/openwrt-packages"
+  },
+  {
+    "repo": "gmrender-resurrect",
+    "commit": "eb17b00579bb58518d56250699f2e172538ea0db",
+    "destination": "device/src/gmrender-resurrect"
+  },
+  {
+    "repo": "ubus",
+    "commit": "55719eda0fa69c5f33cdae99977a2678344574cb",
+    "destination": "device/ubus"
+  },
+  {
+    "repo": "uci",
+    "commit": "5b8ad6bc1d4db90675471504698e53cd8e0711ac",
+    "destination": "device/uci"
+  },
+  {
+    "repo": "uhttpd2",
+    "commit": "d2387ea238f44d8898f96afb590c57170810b411",
+    "destination": "device/uhttpd2"
+  },
+  {
+    "repo": "u-boot-1.1.4",
+    "commit": "0972efd9df0be2aee63a8763e994a03784b1f173",
+    "destination": "bootloaders/u-boot-1.1.4"
+  },
+  {
+    "repo": "u-boot_mod",
+    "commit": "a33af5afbbe7f234942270ae7aaa5c10526479eb",
+    "destination": "bootloaders/u-boot_mod"
+  },
+  {
+    "repo": "mDNSResponder",
+    "commit": "ad446f5cd28ac3aed22707a627b1e185804a9aea",
+    "destination": "third_party/mDNSResponder"
+  }
+]

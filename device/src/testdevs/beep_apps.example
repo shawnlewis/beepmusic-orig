@@ -1,0 +1,42 @@
+# This UCI file specifies all of the installed/available Beep JS apps.
+#
+# Format
+# ------
+# config app '<app_name>'
+#     option 'opt1_name' 'value'
+#     option 'opt2_name' 'value'
+#     ...
+#     option 'optN_name' 'value'
+#
+# For more information, see: http://wiki.openwrt.org/doc/uci
+#
+# IMPORTANT: app_name may only contain alphanumeric characters and underscores
+#            [a-zA-Z0-9_], and MUST match the appName field supplied to the
+#            app's call to BeepReceiverManager.start()
+#
+# Options
+# -------
+# 'path'           (Required) Path to the main javascript file.  Can be
+#                  specified either as absolute or relative to /beep/platform
+#
+# 'display_name'   (Required) Human-friendly name (current unused)
+#
+# 'lib_path'       (Optional) Colon-delimited library search path
+#                  (same semantics as 'path' above) These are searched
+#                  first-to-last, and the default library path
+#                  (/beep/platform/js) is always searched last.
+#
+# 'dial_extra'     (Optional) Extra info to include in the dial app resource
+#                  response. This MUST be valid XML.
+#
+# 'zombie'         (Optional, Dangerous) Forces this JS app to be started when
+#                  this Beep becomes a master and automatically restart in any
+#                  circumstance. ** USE CAUTION, LIKE WITH REAL ZOMBIES **
+
+config app 'my_app'
+    option 'path' '/absolute/path/to/my_app.js'
+    option 'display_name' 'My App'
+
+config app 'other_app'
+    option 'path' 'relative/path/to/other_app.js'
+    option 'display_name' 'Other App'

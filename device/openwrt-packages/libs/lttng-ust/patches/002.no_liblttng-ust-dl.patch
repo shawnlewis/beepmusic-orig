@@ -1,0 +1,30 @@
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -4,7 +4,6 @@ SUBDIRS = . include snprintf libringbuff
+ 		liblttng-ust \
+ 		liblttng-ust-ctl \
+ 		liblttng-ust-fork \
+-		liblttng-ust-dl \
+ 		liblttng-ust-libc-wrapper \
+ 		liblttng-ust-cyg-profile \
+ 		tools
+--- a/Makefile.in
++++ b/Makefile.in
+@@ -135,7 +135,7 @@ ETAGS = etags
+ CTAGS = ctags
+ DIST_SUBDIRS = . include snprintf libringbuffer liblttng-ust-comm \
+ 	liblttng-ust liblttng-ust-ctl liblttng-ust-fork \
+-	liblttng-ust-dl liblttng-ust-libc-wrapper \
++	liblttng-ust-libc-wrapper \
+ 	liblttng-ust-cyg-profile tools liblttng-ust-java \
+ 	liblttng-ust-jul tests
+ DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
+@@ -320,7 +320,7 @@ top_srcdir = @top_srcdir@
+ ACLOCAL_AMFLAGS = -I config
+ SUBDIRS = . include snprintf libringbuffer liblttng-ust-comm \
+ 	liblttng-ust liblttng-ust-ctl liblttng-ust-fork \
+-	liblttng-ust-dl liblttng-ust-libc-wrapper \
++	liblttng-ust-libc-wrapper \
+ 	liblttng-ust-cyg-profile tools $(am__append_1) tests
+ 
+ #temporarily disabled

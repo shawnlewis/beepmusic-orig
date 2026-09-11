@@ -1,0 +1,54 @@
+digraph G {
+    // threads
+    node [shape=box];
+    players;
+    player_states;
+    stream;
+    buffer;
+    play;
+    sync;
+    state;
+
+    // channels
+    node [shape=oval,color=red];
+    ubus_acquire;
+    ubus_stream_command;
+    ubus_players_command;
+    ubus_play_command;
+    ubus_state_command;
+    cookie;
+    players_ch;
+    player_state_update;
+    streaming_players;
+    stream_event;
+    play_state;
+    play_event;
+    rebuffer_request;
+    rebuffer_done;
+
+    // players thread
+    ubus_players_command -> players
+    players -> players_ch
+
+    // player_states thread
+    { players_ch; cookie } -> player_states
+    player_states -> player_state_update
+
+    // stream thread
+    { players_ch; ubus_acquire, ubus_stream_command, player_state_update, rebuffer_done} -> stream
+    stream -> { stream_event; cookie; streaming_players, rebuffer_request }
+
+    // buffer thread
+    { streaming_players; player_state_update; stream_event; rebuffer_request} -> buffer
+    buffer -> rebuffer_done;
+
+    // play thread
+    { streaming_players; player_state_update; ubus_play_command; stream_event } -> play
+    play -> { play_state ; play_event }
+
+    // sync thread
+    { streaming_players; player_state_update; play_state} -> sync
+
+    // state thread
+    { players_ch; player_state_update; play_state; play_event; stream_event; ubus_state_command} -> state
+}

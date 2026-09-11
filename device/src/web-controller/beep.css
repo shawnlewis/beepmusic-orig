@@ -1,0 +1,202 @@
+html {
+    font-family: Verdana, Geneva, sans-serif;
+    color: #143857;
+}
+
+#main {
+    position: relative;
+    width: 400pt;
+    height: 600pt;
+}
+
+#nav {
+    background-color: #143857;
+    color: white;
+    height: 40pt;
+    text-align: center;
+}
+
+/* This color does not quite match */
+#nav a {
+    color: #d45554;
+    font-size: 16pt;
+    text-decoration: none;
+    padding-bottom: 3pt;
+    border-bottom: 2pt solid #d45554;
+    z-index: 100;
+}
+
+#nav #back {
+    position: absolute;
+    left: 30pt;
+    top: 12pt;
+}
+
+#nav #now-playing-link {
+    position: absolute;
+    right: 30pt;
+    top: 12pt;
+}
+
+#nav #back:hover {
+    cursor: pointer;
+}
+
+#nav h2 {
+    position: relative;
+    top: 10pt;
+    font-size: 20pt;
+    font-weight: bold;
+}
+
+#now-playing-mini {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    background-color: #143857;
+    height: 80pt;
+    color: white;
+    font-size: 12pt;
+}
+
+#now-playing-mini h2 {
+    text-transform:capitalize;
+}
+
+#players {
+    position: absolute;
+    left: 420pt;
+    top: 0pt;
+    width: 200pt;
+}
+
+#history {
+    position: absolute;
+    left: 420pt;
+    top: 200pt;
+    width: 200pt;
+}
+
+#history h3 {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#history p {
+    margin-bottom: 10px;
+}
+
+.current-song {
+    margin-left: 30pt;
+    margin-top: 10pt;
+    height: 60pt;
+    table-layout: fixed;
+    text-align: center;
+    width: 180pt;
+}
+
+.current-song td {
+    width: 160pt;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+#play_pause:hover, #skip:hover {
+    cursor: pointer;
+}
+
+#now-playing-mini #play_pause{
+    position: absolute;
+    top: 10pt;
+    right: 100pt;
+    width: 60pt;
+}
+
+#now-playing-mini #skip{
+    position: absolute;
+    top: 20pt;
+    right: 40pt;
+    width: 40pt;
+}
+
+#now-playing-mini table {
+    margin-left: 30pt;
+    margin-top: 10pt;
+    height: 60pt;
+    table-layout: fixed;
+    text-align: center;
+    width: 180pt;
+}
+
+#now-playing-mini td {
+    width: 160pt;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+#now-playing-mini h2 {
+    font-size: 16pt;
+}
+
+#app {
+    height: 480pt;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+#app li {
+    height: 40pt;
+    line-height: 40pt;
+    font-size: 14pt;
+    border-bottom: 2pt solid #143857;
+    padding-left: 30pt;
+}
+
+#app li:hover {
+    cursor: pointer;
+    background-color: #2ba1eb;
+    color: white;
+}
+
+#app .now-playing .cover-art {
+    margin: 0 50pt 0 50pt;
+    height: 260pt;
+}
+
+#app .now-playing .current-song {
+    margin-left: auto;
+    margin-right: auto;
+    font-size: 16pt;
+    width: 300pt;
+    height: 80pt;
+}
+
+#app .now-playing {
+    text-align: center;
+}
+
+#app .now-playing h2 {
+    margin: 20pt;
+    font-size: 24pt;
+}
+
+#app .now-playing p.station {
+    font-size: 16pt;
+    margin-top: 20pt;
+}
+
+#main.now-playing #app {
+    height: 520pt;
+}
+
+#app #bottom-bar {
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    height: 40pt;
+    background-color: #143857;
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<html>
+
+    <head>
+        <meta http-equiv="content-type" content="text/php; charset=utf-8" />
+        <meta name="viewport" content="width=device-width">
+        <title>Beep Music Player - Welcome!</title>
+
+        <link rel="stylesheet" type="text/css" href="/reset.css">
+        <link rel="stylesheet" type="text/css" href="/beep.css">
+        <script src="/jquery.js"></script>
+        <script src="/underscore.js"></script>
+        <script src="/backbone.js"></script>
+        <script src="/json2.js"></script>
+        <script src="/ICanHaz.js"></script>
+
+        <script src="/gen/network.js"></script>
+        <script src="/gen/main.js"></script>
+    </head>
+    <body>
+        <div id="main">
+            <div id="nav"></div>
+            <div id="app"></div>
+            <div id="now-playing-mini"></div>
+            <div id="players"></div>
+            <div id="history"></div>
+        </div>
+    </body>
+
+    <script id="tpl_navbar" type="text/html">
+        {{#back}}
+        <a id="back" href="javascript:void(0);">back</a>
+        {{/back}}
+        <h2>{{title}}</h2>
+        {{#show_now_playing}}
+        <a id="now-playing-link" href="javascript:void(0);">now playing</a>
+        {{/show_now_playing}}
+    </script>
+
+    <script id="tpl_group_selector" type="text/html">
+        <ul>
+        </ul>
+    </script>
+
+    <script id="tpl_group_selector_item" type="text/html">
+        <li> {{context}} </li>
+    </script>
+
+    <script id="tpl_app_selector" type="text/html">
+        <ul>
+        </ul>
+    </script>
+
+    <script id="tpl_app_selector_item" type="text/html">
+        <li> {{app_name}} </li>
+    </script>
+
+    <script id="tpl_app_webradio" type="text/html">
+        <ul>
+        {{#stations}}
+        <li class="station" data-station-name="{{name}}"
+                            data-station-url="{{url}}"
+                            data-station-image-url="{{image_url}}">{{name}}</li>
+        {{/stations}}
+        </ul>
+    </script>
+
+    <script id="tpl_now_playing" type="text/html">
+        <h2>{{app_name}}</h2>
+        {{#track_info}}
+            <img class="cover-art" src="{{image_url}}">
+            <table class="current-song">
+                <tr><td>{{title0}}</td></tr>
+                <tr><td>{{title1}}</td></tr>
+                <tr><td>{{title2}}</td></tr>
+            </table>
+        {{/track_info}}
+        {{#station}}
+            <p class="station">Station: {{name}}</p>
+        {{/station}}
+    </script>
+
+    <script id="tpl_now_playing_mini" type="text/html">
+        {{#playing}}
+        <img id="play_pause" src="pause_button.png">
+        {{/playing}}
+        {{^playing}}
+        <img id="play_pause" src="play_button.png">
+        {{/playing}}
+        <img id="skip" src="skip_button.png">
+
+        <table>
+            <tr><td>
+                <h2> {{app_name}}
+            </h2> </td></tr>
+
+            <tr><td class="station">
+                {{#station_name}}
+                {{station_name}}
+                {{/station_name}}
+            </td></tr>
+        </table>
+    </script>
+
+    <script id="tpl_players" type="text/html">
+        <div>
+            Master
+            <input class="master-volume" type="range" min=0 max=1000 />
+            <span class="master-volume"></span>
+        </div>
+        <ul>
+        </ul>
+    </script>
+
+    <script id="tpl_player" type="text/html">
+        <li>
+            {{id}}
+            <input class="volume" data-player-id="{{id}}"
+                    type="range" min=0 max=1000 value={{volume}} />
+            <span class="volume" data-player-id="{{id}}"></span>
+        </li>
+    </script>
+
+    <script id="tpl_history_item" type="text/html">
+        <p>{{index}}: <a data-index="{{index}}" href='#'>{{app}}: {{name}}</a></p>
+    </script>
+
+</html>

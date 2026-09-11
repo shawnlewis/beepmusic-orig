@@ -1,0 +1,59 @@
+menu "Beep OpenWRT build modifications"
+
+# Boot args.
+	config BEEP_KERN_CMDLINE
+		string
+		prompt "Append kernel cmdline args"
+		default ""
+		help
+		  Appends cmdline arguments to the kernel via patch-cmdline. This is
+		  invoked from target/linux/ar71xx/images/Makefile. Recommend
+		  `make target/linux/clean` when changing this value. Set this to
+		  loglevel=8 to force all printks to serial (too much data can
+		  cause the system to reset, probably from the watchdog).
+
+	choice
+		prompt "KBuild debug logging args"
+		default BEEP_KBUILD_ARGS_NONE
+		help
+		  Add extra args for kbuild. Mainly used for setting kernel debug
+		  parameters. Presets are in include/kernel-beep-kbuild.mk. Recommend
+		  `make target/linux/clean` when changing this value.
+
+		config BEEP_KBUILD_ARGS_NONE
+			bool "none"
+			help
+			  No extra kbuild args.
+
+		config BEEP_KBUILD_ARGS_DEBUG_ALL
+			bool "debug_all"
+			help
+			  Add -DDEBUG to entire kernel build (very verbose, do not
+			  combine with loglevel=8).
+
+		config BEEP_KBUILD_ARGS_DEBUG_TRIM
+			bool "debug_trim"
+			help
+			  Add -DDEBUG excluding files that are too noisy.
+
+		config BEEP_KBUILD_ARGS_USE_CUSTOM
+			bool "use_custom"
+			help
+			  Use custom args set from menuconfig.
+	endchoice
+
+	config BEEP_KBUILD_ARGS_CUSTOM
+		string
+		prompt "KBuild custom args"
+		depends on BEEP_KBUILD_ARGS_USE_CUSTOM
+		default ""
+
+	config BEEP_BUILD_DETERMINISTIC
+		bool
+		prompt "Build binaries deterministically"
+		default y
+		help
+		  Overrides GCC DATE/TIME macros with epoch 0 time.  Allows
+		  stripped binaries to be diffed to check for any changes.
+
+endmenu

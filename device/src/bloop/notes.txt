@@ -1,0 +1,7 @@
+traffic-bloop.log
+
+started monitor
+sent 107 bloops from bloopclient.py
+stopped bloopclient.py
+sent 110 bloops from bloopclient.py
+

@@ -1,0 +1,17 @@
+config main 'main'
+    option device_id 'beepcomm_test'
+    option device_name 'BEEPCOMM TEST -- DO NOT DISTURB'
+    option group_id '123'
+    option cluster_id 'beepcomm_test'
+    option data_host 'reverb.beepdevices.com'
+    option data_port '80'
+    option data_path '/1/data/'
+
+config devel 'devel'
+    option urelay_port 40518
+    option playnet_port 40519
+    option uhttpd_port 40520
+    option spotify_port 40521
+    option ssdp_port 40522
+    option dial_port 40523
+    option msg_port 40524

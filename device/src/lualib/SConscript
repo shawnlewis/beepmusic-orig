@@ -1,0 +1,89 @@
+Import('root_env', 'env')
+
+
+env.SetDefault(
+    LIBLUA51=['lua5.1'],
+    LIBNL=['nl-genl-3', 'nl-3'],
+    efilt={'device_type':'virtual'})
+env.SetDefault(
+    LIBLUA51=['lua'],
+    LIBNL=['nl-tiny'],
+    efilt={'device_type':'real'})
+
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/libnl3',
+    efilt={'device_type':'virtual'})
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/libnl-tiny',
+    efilt={'device_type':'real'})
+
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/lua5.1')
+
+
+lualib_beep_src = ['lualib/beep.c']
+
+lualib_beep = env.SharedLibrary(
+    target='lualib/beep',
+    source=lualib_beep_src,
+    LIBS=['beep', '$LIBLUA51', 'rt'],
+    SHLIBPREFIX='')
+
+
+lualib_gpio_src = ['lualib/gpio.c']
+
+lualib_gpio = env.SharedLibrary(
+    target='lualib/gpio',
+    source=lualib_gpio_src,
+    LIBS=['beep', '$LIBLUA51', 'ubox'],
+    SHLIBPREFIX='')
+
+
+lualib_i2c_src = ['lualib/i2c.c']
+
+lualib_i2c = env.SharedLibrary(
+    target='lualib/i2c',
+    source=lualib_i2c_src,
+    LIBS=['beep', '$LIBLUA51', 'i2c'],
+    SHLIBPREFIX='')
+
+lualib_crypto_src = ['lualib/crypto.c']
+
+lualib_crypto = env.SharedLibrary(
+    target='lualib/crypto',
+    source=lualib_crypto_src,
+    LIBS=['beep', '$LIBLUA51', 'crypto', 'ssl'],
+    SHLIBPREFIX='')
+
+lualib_beepnl_src = ['lualib/beepnl.c']
+
+lualib_beepnl = env.SharedLibrary(
+    target='lualib/beepnl',
+    source=lualib_beepnl_src,
+    LIBS=['beepnl', 'beep', '$LIBNL', '$LIBLUA51'],
+    SHLIBPREFIX='')
+
+lualib_stream_src = ['lualib/stream.c']
+
+lualib_stream = env.SharedLibrary(
+    target='lualib/stream',
+    source=lualib_stream_src,
+    LIBS=['beep', '$LIBLUA51'],
+    SHLIBPREFIX='')
+
+lualib_trigint_src = ['lualib/trigint.c']
+
+lualib_trigint = env.SharedLibrary(
+    target='lualib/trigint',
+    source=lualib_trigint_src,
+    LIBS=['$LIBLUA51'],
+    SHLIBPREFIX='')
+
+lualib_curl_src = ['lualib/curl.c']
+
+lualib_curl = env.SharedLibrary(
+    target='lualib/curl',
+    source=lualib_curl_src,
+    LIBS=['beep', '$LIBLUA51', 'curl'],
+    SHLIBPREFIX='')
+

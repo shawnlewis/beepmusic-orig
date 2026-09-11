@@ -1,0 +1,10 @@
+# beep_device uci config file
+#
+# device specific settings, set once and never modified.
+
+config main 'main'
+    # (string) Unique Identifier.  Must NOT contain any '.' characters
+    option device_id 'dev-shawn-0001'
+
+    # (string) Device Authorization Token.
+    option device_auth ''

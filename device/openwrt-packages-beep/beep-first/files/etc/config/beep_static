@@ -1,0 +1,8 @@
+config main 'main'
+    option data_host 'reverb.beepdevices.com'
+    option data_port '40937'
+    option data_path '/1/data/'
+    option update_serv 'reverb.beepdevices.com'
+    option update_port '40937'
+    option crash_serv 'reverb.beepdevices.com'
+    option crash_port '40937'

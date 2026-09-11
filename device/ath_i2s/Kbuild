@@ -1,0 +1,4 @@
+#
+# Makefile for I2S
+#
+obj-m			+=	ath_i2s.o

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+set -e   # exit on first error
+
+. /beep/beep_functions.sh
+
+trap kill_children SIGINT SIGTERM
+
+/beep/babysitter.sh /beep/beepio.sh &
+
+wait

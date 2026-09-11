@@ -1,0 +1,65 @@
+Import('root_env', 'env')
+
+
+env.Append(CPPPATH='#/beepupdate')
+
+env.Append(CPPDEFINES={
+    '_GNU_SOURCE': None,
+    'NPARSE_DUMP_STATE': None
+})
+
+libbeepupdate_src = [
+    'beepupdate/config.c',
+    'beepupdate/crt.c',
+    'beepupdate/key.c',
+    'beepupdate/manifest.c',
+    'beepupdate/mem.c',
+    'beepupdate/package.c',
+    'beepupdate/package_file.c',
+    'beepupdate/package_zlib.c',
+    'beepupdate/scripts.c',
+    'beepupdate/server.c',
+    'beepupdate/system.c',
+    'beepupdate/utils.c',
+    'beepupdate/verify.c',
+    'beepupdate/yaml_utils.c'
+]
+
+libbeepupdate = env.StaticLibrary(
+    target='beepupdate',
+    source=libbeepupdate_src)
+
+
+beepupdate_src = ['beepupdate/main.c']
+
+beepupdate_common_libs = [
+    libbeepupdate,
+    'beeplog',
+    'pthread',
+    'curl',
+    'crypto',
+    'ssl',
+    'yaml',
+    'rt',
+    'z',
+    'uci'
+]
+
+beepupdate = env.Program(
+    target='beepupdate',
+    source=beepupdate_src,
+    LIBS=beepupdate_common_libs)
+
+
+beepupdate_test_src = [
+    'beepupdate/tests/beepupdate_test.c',
+    'beepupdate/tests/bootcount_test.c',
+    'beepupdate/tests/manifest_test.c',
+    'beepupdate/tests/scripts_test.c',
+    'beepupdate/tests/verify_test.c'
+]
+
+# beepupdate_test = env.Program(
+#     target='beepupdate_test',
+#     source=beepupdate_test_src,
+#     LIBS=beepupdate_common_libs + ['check', 'm'])

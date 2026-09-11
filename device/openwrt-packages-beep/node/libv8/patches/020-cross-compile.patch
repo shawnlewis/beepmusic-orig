@@ -1,0 +1,51 @@
+--- a/src/d8.gyp
++++ b/src/d8.gyp
+@@ -99,7 +99,7 @@
+             '<(SHARED_INTERMEDIATE_DIR)/d8-js.cc',
+           ],
+           'action': [
+-            'python',
++            '/usr/bin/python',
+             '../tools/js2c.py',
+             '<@(_outputs)',
+             'D8',
+--- a/test/cctest/cctest.gyp
++++ b/test/cctest/cctest.gyp
+@@ -187,7 +187,7 @@
+             '<(generated_file)',
+           ],
+           'action': [
+-            'python',
++            '/usr/bin/python',
+             '../../tools/js2c.py',
+             '<@(_outputs)',
+             'TEST',  # type
+--- a/tools/gyp/v8.gyp
++++ b/tools/gyp/v8.gyp
+@@ -792,7 +792,7 @@
+                 '<(SHARED_INTERMEDIATE_DIR)/libraries.cc',
+               ],
+               'action': [
+-                'python',
++                '/usr/bin/python',
+                 '../../tools/js2c.py',
+                 '<@(_outputs)',
+                 'CORE',
+@@ -810,7 +810,7 @@
+                 '<(SHARED_INTERMEDIATE_DIR)/experimental-libraries.cc',
+               ],
+               'action': [
+-                'python',
++                '/usr/bin/python',
+                 '../../tools/js2c.py',
+                 '<@(_outputs)',
+                 'EXPERIMENTAL',
+@@ -840,7 +840,7 @@
+                   '<(SHARED_INTERMEDIATE_DIR)/debug-support.cc',
+                 ],
+                 'action': [
+-                  'python',
++                  '/usr/bin/python',
+                   '../../tools/gen-postmortem-metadata.py',
+                   '<@(_outputs)',
+                   '<@(heapobject_files)'

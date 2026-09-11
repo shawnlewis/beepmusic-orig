@@ -1,0 +1,9 @@
+Make directories called <name> (ex: "a1") for each test device you want to
+generate.
+
+Then:
+   cd <name>
+   - copy each ../*.example file to the device directory, removing the
+     .example suffix
+
+And modify the copied files as needed.

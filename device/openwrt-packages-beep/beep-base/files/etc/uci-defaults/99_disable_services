@@ -1,0 +1,10 @@
+#!/bin/sh
+
+services="dnsmasq firewall uhttpd usb"
+for i in $services
+do
+    /etc/init.d/$i enabled && {
+        /etc/init.d/$i stop
+        /etc/init.d/$i disable
+    }
+done

@@ -1,0 +1,38 @@
+--- a/ldso/ldso/mips/elfinterp.c
++++ b/ldso/ldso/mips/elfinterp.c
+@@ -241,8 +241,9 @@ int _dl_parse_relocation_information(str
+ 						if (tls_tpnt)
+ 							*(ElfW(Word) *)reloc_addr = tls_tpnt->l_tls_modid;
+ #ifdef __SUPPORT_LD_DEBUG__
+-						_dl_dprintf(2, "TLS_DTPMOD : %s, %d, %d\n",
+-							symname, old_val, *((unsigned int *)reloc_addr));
++                        if (_dl_debug_detail)
++                            _dl_dprintf(2, "TLS_DTPMOD : %s, %d, %d\n",
++                                symname, old_val, *((unsigned int *)reloc_addr));
+ #endif
+ 						break;
+ 
+@@ -251,8 +252,9 @@ int _dl_parse_relocation_information(str
+ 						*(ElfW(Word) *)reloc_addr +=
+ 							TLS_DTPREL_VALUE (symbol_addr);
+ #ifdef __SUPPORT_LD_DEBUG__
+-						_dl_dprintf(2, "TLS_DTPREL : %s, %x, %x\n",
+-							symname, old_val, *((unsigned int *)reloc_addr));
++                        if (_dl_debug_detail)
++                            _dl_dprintf(2, "TLS_DTPREL : %s, %x, %x\n",
++                                symname, old_val, *((unsigned int *)reloc_addr));
+ #endif
+ 						break;
+ 
+@@ -262,8 +264,9 @@ int _dl_parse_relocation_information(str
+ 						*(ElfW(Word) *)reloc_addr +=
+ 							TLS_TPREL_VALUE (tls_tpnt, symbol_addr);
+ #ifdef __SUPPORT_LD_DEBUG__
+-						_dl_dprintf(2, "TLS_TPREL  : %s, %x, %x\n",
+-							symname, old_val, *((unsigned int *)reloc_addr));
++                        if (_dl_debug_detail)
++                            _dl_dprintf(2, "TLS_TPREL  : %s, %x, %x\n",
++                                symname, old_val, *((unsigned int *)reloc_addr));
+ #endif
+ 						break;
+ 				}

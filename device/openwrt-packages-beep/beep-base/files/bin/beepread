@@ -1,0 +1,2 @@
+#!/bin/sh
+logread -f | grep -v beephealth | grep -v dropbear

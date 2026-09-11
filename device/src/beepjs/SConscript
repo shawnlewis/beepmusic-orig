@@ -1,0 +1,91 @@
+Import('root_env', 'env')
+
+
+env.Append(
+    CPPPATH='$SYSROOT/usr/local/include/js-17.0',
+    efilt={'device_type':'virtual'})
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/js-17.0',
+    efilt={'device_type':'real'})
+
+env.Append(CXXFLAGS=[
+    '-include',
+    'js/RequiredDefines.h',
+    '-Wno-unused-local-typedefs',
+    '-fpermissive'
+])
+
+env.Append(CPPDEFINES={ '_FILE_OFFSET_BITS': 64 })
+
+beepjs_src_base = [
+    'beepjs/beep.cc',
+    'beepjs/beepjs_crt.cc',
+    'beepjs/beepjs_error.cc',
+    'beepjs/buffer.cc',
+    'beepjs/constants.cc',
+    'beepjs/crypto.cc',
+    'beepjs/curl.cc',
+    'beepjs/fs.cc',
+    'beepjs/main.cc',
+    'beepjs/process.cc',
+    'beepjs/system.cc',
+    'beepjs/timer.cc',
+    'beepjs/utils.cc'
+]
+
+beepjs_src_full = beepjs_src_base + [
+    'beepjs/dev.cc'
+]
+
+beepjs_libs = [
+    'uv',
+    'mozjs-17.0',
+    'curl',
+    'beep',
+    'pthread',
+    'crypto',
+    'ssl',
+    'ubox',
+    'blobmsg_json',
+    'ubus'
+]
+
+beepjs = env.Program(
+    target='beepjs',
+    source=beepjs_src_base,
+    LIBS=beepjs_libs,
+    efilt={'device_type':'virtual'})
+beepjs = env.Program(
+    target='beepjs',
+    source=beepjs_src_base,
+    LIBS=beepjs_libs,
+    efilt={'device_type':'real'})
+
+env.Symlink(target='js/crypto.js', source='beepjs/crypto.js')
+env.Symlink(target='js/http.js', source='beepjs/http.js')
+env.Symlink(target='js/https.js', source='beepjs/https.js')
+env.Symlink(target='js/url.js', source='beepjs/url.js')
+env.Symlink(target='js/querystring.js', source='beepjs/querystring.js')
+env.Symlink(target='js/punycode.js', source='beepjs/punycode.js')
+env.Symlink(target='js/beep.js', source='beepjs/beep.js')
+env.Symlink(target='js/audio.js', source='beepjs/audio.js')
+env.Symlink(target='js/cast.js', source='beepjs/cast.js')
+env.Symlink(target='js/cast_channel.js', source='beepjs/cast_channel.js')
+env.Symlink(target='js/cast_messagebus.js', source='beepjs/cast_messagebus.js')
+env.Symlink(target='js/cast_mediamanager.js', source='beepjs/cast_mediamanager.js')
+env.Symlink(target='js/stream.js', source='beepjs/stream.js')
+env.Symlink(target='js/_start.js', source='beepjs/_start.js')
+
+env.Symlink(target='js/assert.js', source='beepjs/external/assert.js')
+env.Symlink(target='js/events.js', source='beepjs/external/events.js')
+env.Symlink(target='js/fs.js', source='beepjs/external/fs.js')
+env.Symlink(target='js/path.js', source='beepjs/external/path.js')
+env.Symlink(target='js/util.js', source='beepjs/external/util.js')
+
+env.Symlink(target='js/XMLHttpRequest.js', source='beepjs/external/XMLHttpRequest.js')
+
+env.Symlink(target='js/backbone.js', source='beepjs/external/backbone.js')
+env.Symlink(target='js/node-uuid.js', source='beepjs/external/node-uuid.js')
+env.Symlink(target='js/underscore.js', source='beepjs/external/underscore.js')
+env.Symlink(target='js/winston.js', source='beepjs/external/winston.js')
+

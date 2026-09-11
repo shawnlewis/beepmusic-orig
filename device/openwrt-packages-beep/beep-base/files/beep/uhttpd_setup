@@ -1,0 +1,9 @@
+#!/bin/sh
+
+set -e   # exit on first error
+
+. /beep/beep_functions.sh
+
+uhttpd -p 0.0.0.0:1234 -u /setup -U /var/run/ubus.sock -a -D
+
+wait

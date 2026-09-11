@@ -1,0 +1,15 @@
+Import('root_env', 'env')
+
+curl_test_src = ['curl_test/curl_test.c']
+
+curl_test = env.Program(
+    target='curl_test',
+    source=curl_test_src,
+    LIBS=['beep', 'curl', 'ubox'])
+
+curl_stream_test_src = ['curl_test/curl_stream_test.c']
+
+curl_stream_test = env.Program(
+    target='curl_stream_test',
+    source=curl_stream_test_src,
+    LIBS=['beep', 'curl', 'ubox'])

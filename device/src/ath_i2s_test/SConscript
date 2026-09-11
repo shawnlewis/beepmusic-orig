@@ -1,0 +1,11 @@
+Import('root_env', 'env')
+
+
+stress_ath_i2s_src = ['ath_i2s_test/stress_ath_i2s.c']
+
+stress_ath_i2s_libs = []
+
+stress_ath_i2s = env.Program(
+    target='stress_ath_i2s',
+    source=stress_ath_i2s_src,
+    LIBS=stress_ath_i2s_libs)

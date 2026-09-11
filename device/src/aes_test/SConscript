@@ -1,0 +1,11 @@
+Import('root_env', 'env')
+
+
+openssl_aes_src = ['aes_test/openssl_aes.c']
+
+openssl_aes_libs = ['crypto']
+
+openssl_aes = env.Program(
+    target='openssl_aes',
+    source=openssl_aes_src,
+    LIBS=openssl_aes_libs)

@@ -1,0 +1,25 @@
+# beep_devel uci config file
+#
+# beep development settings
+
+config main 'main'
+    # 0 or 1. Whether to force the cluster_id provided in beep_data
+    option force_cluster '1'
+
+    # (string) Path to a version file, used by beepmanager_updates.
+    option version_file_path '/tmp/a1.version'
+
+    # 0 or 1. Passed by beepmanager through to Spotify, to enable the
+    # Spotify library's debugging messages.
+    option spotify_debug '1'
+
+# These are ports for the various beep services, used by boom and passed
+# through beepmanager to the individual programs.
+config boom 'boom'
+    option urelay_port 29148
+    option playnet_port 32300
+    option uhttpd_port 8070
+    option ssdp_port 32334
+    option dial_port 32335
+    option msg_port 32336
+    option spotify_port 9303

@@ -1,0 +1,20 @@
+Import('root_env', 'env')
+
+
+env.Append(
+    CPPPATH='$SYSROOT/usr/local/include/json-c',
+    efilt={'device_type':'virtual'})
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/json-c',
+    efilt={'device_type':'real'})
+
+beepdata_src = [
+    'beepdata/beepdata.c',
+    'beepdata/jsonfile.c',
+    'beepdata/model.c',
+]
+
+beepdata = env.Program(
+    target='beepdata',
+    source=beepdata_src,
+    LIBS=['beep', 'ubox', 'ubus', 'json-c', 'blobmsg_json'])

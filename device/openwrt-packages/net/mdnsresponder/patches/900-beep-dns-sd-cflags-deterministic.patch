@@ -1,0 +1,16 @@
+diff -NaurZ a/Clients/Makefile b/Clients/Makefile
+--- a/Clients/Makefile	2014-10-15 20:14:27.606067769 -0700
++++ b/Clients/Makefile	2014-10-15 20:15:41.218070391 -0700
+@@ -83,10 +83,10 @@
+ 	mkdir build
+ 
+ build/dns-sd: build dns-sd.c ClientCommon.c
+-	$(CC) $(filter %.c %.o, $+) $(LIBS) -I../mDNSShared -Wall -o $@
++	$(CC) $(CFLAGS_DEBUG) $(filter %.c %.o, $+) $(LIBS) -I../mDNSShared -Wall -o $@
+ 
+ build/dns-sd64: build dns-sd.c ClientCommon.c
+-	$(CC) $(filter %.c %.o, $+) $(LIBS) -I../mDNSShared -Wall -o $@ -m64
++	$(CC) $(CFLAGS_DEBUG) $(filter %.c %.o, $+) $(LIBS) -I../mDNSShared -Wall -o $@ -m64
+ 
+ # Note, we can make a 'fat' version of dns-sd using 'lipo', as shown below, but we
+ # don't, because we don't want or need a 'fat' version of dns-sd, because it will

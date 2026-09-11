@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<workspace>
+  <project>
+    <path>$WS_DIR$\bootloader.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\controller.ewp</path>
+  </project>
+  <project>
+    <path>$WS_DIR$\demo.ewp</path>
+  </project>
+  <batchBuild>
+    <batchDefinition>
+      <name>all</name>
+      <member>
+        <project>controller</project>
+        <configuration>Debug</configuration>
+      </member>
+      <member>
+        <project>controller</project>
+        <configuration>Debug standalone</configuration>
+      </member>
+      <member>
+        <project>controller</project>
+        <configuration>Release</configuration>
+      </member>
+      <member>
+        <project>controller</project>
+        <configuration>Release standalone</configuration>
+      </member>
+      <member>
+        <project>controller</project>
+        <configuration>Debug hex</configuration>
+      </member>
+      <member>
+        <project>controller</project>
+        <configuration>Release hex</configuration>
+      </member>
+      <member>
+        <project>demo</project>
+        <configuration>Debug</configuration>
+      </member>
+      <member>
+        <project>demo</project>
+        <configuration>Debug standalone</configuration>
+      </member>
+      <member>
+        <project>demo</project>
+        <configuration>Release</configuration>
+      </member>
+      <member>
+        <project>demo</project>
+        <configuration>Release standalone</configuration>
+      </member>
+      <member>
+        <project>bootloader</project>
+        <configuration>Debug - B3_main</configuration>
+      </member>
+      <member>
+        <project>bootloader</project>
+        <configuration>Debug - Demo board</configuration>
+      </member>
+      <member>
+        <project>bootloader</project>
+        <configuration>Release - B3_main</configuration>
+      </member>
+      <member>
+        <project>bootloader</project>
+        <configuration>Release - Demo board</configuration>
+      </member>
+    </batchDefinition>
+  </batchBuild>
+</workspace>
+
+

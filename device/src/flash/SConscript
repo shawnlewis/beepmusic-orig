@@ -1,0 +1,25 @@
+Import('root_env', 'env')
+
+env.FilterOut(CCFLAGS=['-O0', '-O1', '-O2', '-Os'])
+env.Append(CCFLAGS=['-ffreestanding', '-nostartfiles'])
+env.Set(LINKFLAGS=['-T', '$FLASHBIN_LD_SCR', '-nostdlib'])
+
+flashbin_ld_scr = [
+    '#/flash/flash.ld'
+]
+
+flashbin_src = [
+    'flash/ar7240_flash.c',
+    'flash/flash.c'
+]
+
+env.Set(FLASHBIN_LD_SCR=env.File(flashbin_ld_scr))
+
+flashbin = env.Program(
+    target='flash.bin',
+    source=flashbin_src,
+    binver_tracking=False)
+
+env.Depends(flashbin, flashbin_ld_scr)
+env.AddPPostAction(flashbin, '$OBJCOPY -O binary $TARGET', 'OBJCOPY', '$TARGET')
+#env.AddPPostAction(flashbin, '$OBJCOPY -O binary $TARGET flash.bin', 'OBJCOPY', '$TARGET')

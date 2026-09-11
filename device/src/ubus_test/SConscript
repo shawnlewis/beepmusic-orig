@@ -1,0 +1,15 @@
+Import('root_env', 'env')
+
+ubustest_cclient_src = ['ubus_test/ubustest_cclient.c']
+
+ubuttest_cclient = env.Program(
+    target='ubustest_cclient',
+    source=ubustest_cclient_src,
+    LIBS=['beep', 'ubox', 'ubus', 'blobmsg_json'])
+
+uhammer_src = ['ubus_test/uhammer.c']
+
+uhammer = env.Program(
+    target='uhammer',
+    source=uhammer_src,
+    LIBS=['beep', 'ubox', 'ubus', 'blobmsg_json'])

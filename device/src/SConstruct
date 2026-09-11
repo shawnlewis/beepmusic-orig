@@ -1,0 +1,78 @@
+import os
+import sys
+import platform
+
+import SCons
+from targetdb import targetdb
+
+
+env_list = []
+target_names = GetOption('target').split(',')
+if 'all' in target_names:
+    target_names = targetdb.list_targets()
+targets = [targetdb.get_target(x) for x in target_names]
+
+for target in targets:
+    env = RootEnvironment(target_def=target)
+
+    # Do global stuff here.
+    env.Append(CPPPATH=['#/lib', '#/shared'])
+    env.Append(CFLAGS=[
+        '-std=gnu99',
+        '-Wstrict-prototypes'
+    ])
+    env.Append(CCFLAGS=[
+        '-g',
+        '-Wall',
+        '-Werror',
+        '-Wno-error=unused-but-set-variable',
+        '-Wno-error=unused-variable'
+    ])
+    # This tells the dynamic linker to search the current directory of the
+    # binary for libs. (http://www.scons.org/wiki/UsingOrigin)
+    env.Append(LINKFLAGS='-z origin -Wl,--warn-common,--fatal-warnings')
+    env.Append(
+        RPATH=[env.Literal('\\$$ORIGIN/.')],
+        efilt={'device_type':'virtual'})
+    env.Append(
+        RPATH=[env.Literal('/beep/platform')],
+        efilt={'device_type':'real'})
+
+    # Not really a good place to put this.
+    #env.Symlink(target='lua', source='#/lua', keep_source=True)
+
+    env_list.append(env)
+
+
+MainSConscript(env_list, 'aes_test/SConscript')
+MainSConscript(env_list, 'apps/SConscript')
+MainSConscript(env_list, 'async_test/SConscript')
+MainSConscript(env_list, 'ath_i2s_test/SConscript')
+MainSConscript(env_list, 'athplay/SConscript')
+MainSConscript(env_list, 'beepcloud/SConscript')
+MainSConscript(env_list, 'beepcomm/SConscript')
+MainSConscript(env_list, 'beepdata/SConscript')
+MainSConscript(env_list, 'beepdiscovery/SConscript')
+MainSConscript(env_list, 'beephead-simple/SConscript')
+MainSConscript(env_list, 'beepjs/SConscript')
+MainSConscript(env_list, 'beepupdate/SConscript')
+MainSConscript(env_list, 'curl_test/SConscript')
+MainSConscript(env_list, 'data_test/SConscript')
+MainSConscript(env_list, 'flash/SConscript', efilt={'arch':'mips'})
+MainSConscript(env_list, 'gmrender-resurrect/src/SConscript')
+MainSConscript(env_list, 'gpio_test/SConscript')
+MainSConscript(env_list, 'iomcu/ioutil/SConscript')
+MainSConscript(env_list, 'lib/SConscript')
+MainSConscript(env_list, 'lib/beepnl/SConscript')
+MainSConscript(env_list, 'lua/SConscript')
+MainSConscript(env_list, 'lualib/SConscript')
+MainSConscript(env_list, 'one_off_tests/SConscript')
+MainSConscript(env_list, 'playnet/SConscript')
+MainSConscript(env_list, 'sample_apps/SConscript')
+MainSConscript(env_list, 'tools/SConscript')
+MainSConscript(env_list, 'ubus_test/SConscript')
+MainSConscript(env_list, 'urelay/SConscript')
+MainSConscript(env_list, 'web-controller/SConscript')
+MainSConscript(env_list, 'wifisetup/SConscript')
+
+BuildEnvs(env_list)

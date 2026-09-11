@@ -1,0 +1,39 @@
+diff -u --recursive a/libc/misc/syslog/syslog.c b/libc/misc/syslog/syslog.c
+--- a/libc/misc/syslog/syslog.c	2013-08-30 18:23:18.164130024 -0400
++++ b/libc/misc/syslog/syslog.c	2013-08-30 19:09:34.664032444 -0400
+@@ -89,6 +89,7 @@
+  * (default: if there was no openlog or if openlog passed NULL),
+  * not string "syslog"
+  */
++static const char *LogTagHostname[65];  /* hostname can only be _UTSNAME_LENGTH (65) */
+ static const char *LogTag = "syslog";   /* string to tag the entry with */
+ static int       LogFile = -1;          /* fd for log */
+ static smalluint connected;             /* have done connect */
+@@ -117,6 +118,7 @@
+ 	connected = 0;
+ 	if (sig == 0) { /* called from closelog()? - reset to defaults */
+ 		LogStat = 0;
++                LogTagHostname[0] = '\0';
+ 		LogTag = "syslog";
+ 		LogFacility = LOG_USER >> 3;
+ 		LogMask = 0xff;
+@@ -131,6 +133,8 @@
+
+ 	if (ident != NULL)
+ 		LogTag = ident;
++        if (gethostname(LogTagHostname, sizeof(LogTagHostname)) == -1)
++            strcpy(LogTagHostname, "unknown");
+ 	LogStat = logstat;
+ 	/* (we were checking also for logfac != 0, but it breaks
+ 	 * openlog(xx, LOG_KERN) since LOG_KERN == 0) */
+@@ -218,8 +222,8 @@
+ 	(void)time(&now);
+ 	stdp = p = tbuf + sprintf(tbuf, "<%d>%.15s ", pri, ctime(&now) + 4);
+ 	/*if (LogTag) - always true */ {
+-		if (strlen(LogTag) < sizeof(tbuf) - 64)
+-			p += sprintf(p, "%s", LogTag);
++		if (strlen(LogTag) + strlen(LogTagHostname) + 1 < sizeof(tbuf) - 64)
++			p += sprintf(p, "%s %s", LogTagHostname, LogTag);
+ 		else
+ 			p += sprintf(p, "<BUFFER OVERRUN ATTEMPT>");
+ 	}

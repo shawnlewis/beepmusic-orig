@@ -1,0 +1,17 @@
+diff --git a/device/src/lua/distributor.lua b/device/src/lua/distributor.lua
+index 8e598bc..9f5f138 100755
+--- a/device/src/lua/distributor.lua
++++ b/device/src/lua/distributor.lua
+@@ -580,8 +580,11 @@ function on_player_update()
+                 ubus_call(conn, app_ubus_obj, 'audio_ended', nil, nil,
+                         {method_not_found_ok=true})
+             end
+-            trigger_update('audio_state_change')
+             all_players_call('pause')
++
++            uloop.timer(function()
++                trigger_update('audio_state_change')
++            end, 1000)
+         end
+     end
+ 

@@ -1,0 +1,14 @@
+#!/bin/sh
+
+# TODO: Do this properly (using the module system and maybe hotplug to
+#     create the device node). At the very least we don't want to rely on
+#     the hardcoded kernel version here.
+
+set -e   # exit on first error
+
+. /beep/beep_functions.sh
+
+trap kill_children SIGINT SIGTERM
+
+/beep/babysitter.sh /beep/beepmanagerd.sh &
+wait

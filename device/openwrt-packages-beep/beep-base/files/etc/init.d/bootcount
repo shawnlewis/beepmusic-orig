@@ -1,0 +1,12 @@
+#!/bin/sh /etc/rc.common
+
+START=17
+
+start() {
+	exec 1>/dev/console  ;# redirect stdout to serial console
+	exec 2>/dev/console  ;# redirect stderr to serial console
+
+	echo "beepupdate bootcount()"
+        /beep/beepupdate --syslog bc
+	echo "beepupdate bootcount() done"
+}

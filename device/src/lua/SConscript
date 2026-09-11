@@ -1,0 +1,14 @@
+Import('root_env', 'env')
+
+
+lua_src = Glob('*.lua')
+lua_src += Glob('lib/*.lua')
+
+lua_test_example_src = Glob('test/*.lua')
+lua_test_example_src += Glob('examples/*.lua')
+
+for src in lua_src:
+    env.Lua(target=src.path, source=src.path)
+
+for src in lua_test_example_src:
+    env.Symlink(target=src.path, source=src.path)

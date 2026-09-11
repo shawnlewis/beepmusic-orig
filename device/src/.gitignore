@@ -1,0 +1,4 @@
+build/
+out/
+tags
+.binver_cache

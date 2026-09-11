@@ -1,0 +1,34 @@
+Import('root_env', 'env')
+
+
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/libnl3',
+    LIBNL=['nl-genl-3', 'nl-3'],
+    efilt={'device_type':'virtual'})
+env.Append(
+    CPPPATH='$SYSROOT/usr/include/libnl-tiny',
+    LIBNL=['nl-tiny'],
+    efilt={'device_type':'real'})
+
+env.Append(CPPDEFINES={
+    '_GNU_SOURCE': None
+})
+
+libbeepnl_src = [
+    'lib/beepnl/beepnl.c',
+    'lib/beepnl/nl80211_str.c'
+]
+
+libbeepnl = env.SharedLibrary(
+    target='libbeepnl',
+    source=libbeepnl_src,
+    LIBS=['beep', '$LIBNL'])
+
+beepnl_test_src = [
+    'lib/beepnl/beepnl_test.c'
+]
+
+beepnl_test = env.Program(
+    target='beepnl-test',
+    source=beepnl_test_src,
+    LIBS=['beep', 'beepnl', '$LIBNL'])

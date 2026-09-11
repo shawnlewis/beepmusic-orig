@@ -1,0 +1,25 @@
+Import('root_env', 'env')
+
+
+playnet_src = ['playnet/playnet.c']
+
+playnet_libs = [
+    'player',
+    'decode-audio',
+    'aucom',
+    'fdk-aac',
+    'beep',
+    'FLAC',
+    'pthread',
+    'rt',
+    'mad',
+    'vorbisidec',
+    'ubox',
+    'ubus',
+    'm'
+]
+
+playnet = env.Program(
+    target='playnet',
+    source=playnet_src,
+    LIBS=playnet_libs)

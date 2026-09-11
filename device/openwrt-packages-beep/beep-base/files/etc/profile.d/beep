@@ -1,0 +1,4 @@
+#!/bin/sh
+
+alias start='/etc/init.d/beepmanager start'
+alias stop='/etc/init.d/beepmanager stop'

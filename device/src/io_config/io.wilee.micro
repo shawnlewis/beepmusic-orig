@@ -1,0 +1,146 @@
+##### inputs
+
+config input 'button_volume_down'
+    option type 'i2c_button'
+    option i2c_button_id 0
+
+config input 'button_volume_up'
+    option type 'i2c_button'
+    option i2c_button_id 1
+
+config input 'button_previous'
+    option type 'i2c_button'
+    option i2c_button_id 2
+
+config input 'button_playpause'
+    option type 'i2c_button'
+    option i2c_button_id 3
+
+config input 'button_next'
+    option type 'i2c_button'
+    option i2c_button_id 4
+
+config input 'button_magic'
+    option type 'i2c_button'
+    option i2c_button_id 5
+
+config input 'button_spare'
+    option type 'i2c_button'
+    option i2c_button_id 6
+
+config input 'power_state'
+    option type 'i2c_power_source_state'
+    option i2c_power_source_state_id 7
+
+
+### input actions
+
+config input_action
+    option mode 'audio'
+    option trigger 'hold_and_repeat'
+    option input 'button_volume_down'
+    option action 'volume_down'
+
+config input_action
+    option mode 'audio'
+    option trigger 'hold_and_repeat'
+    option input 'button_volume_up'
+    option action 'volume_up'
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button_previous'
+    option action 'prev'
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button_playpause'
+    option action 'toggle_play_pause'
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button_next'
+    option action 'skip'
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button_magic'
+    option action 'toggle_play_pause'
+
+config input_action
+    option mode 'audio'
+    option trigger 'tap'
+    option input 'button_spare'
+    option action 'toggle_play_pause'
+
+config input_action
+    option mode 'starting'
+    option trigger 'hold'
+    option input 'button_magic'
+    option hold_time 5000
+    option action 'enter_wifisetup_mode'
+
+config input_action
+    option mode 'audio'
+    option trigger 'hold'
+    option input 'button_magic'
+    option hold_time 5000
+    option action 'enter_wifisetup_mode'
+
+### outputs
+
+config output 'led1'
+    option type 'i2c_led'
+    option i2c_led_id 0
+
+config output 'rgb_led'
+    option type 'i2c_rgb_led'
+    option i2c_rgb_led_id 1
+
+
+### output actions
+
+config output_action
+    option trigger 'starting'
+    option output 'led1'
+    option view 'on'
+
+config output_action
+    option trigger 'wifisetup'
+    option output 'led1'
+    option view 'blink'
+    option blink_period_ms 2000
+
+config output_action
+    option trigger 'starting'
+    option output 'rgb_led'
+    option view 'set_rgb'
+    option set_rgb_r 255
+    option set_rgb_g 255
+    option set_rgb_b 0
+
+config output_action
+    option trigger 'audio_playing'
+    option output 'rgb_led'
+    option view 'random_walk'
+    option random_walk_speed 3
+
+config output_action
+    option trigger 'audio_working'
+    option output 'rgb_led'
+    option view 'set_rgb'
+    option set_rgb_r 255
+    option set_rgb_g 51
+    option set_rgb_b 153
+
+config output_action
+    option trigger 'audio_paused'
+    option output 'rgb_led'
+    option view 'set_rgb'
+    option set_rgb_r 153
+    option set_rgb_g 0
+    option set_rgb_b 153

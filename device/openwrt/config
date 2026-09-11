@@ -1,0 +1,43 @@
+#!/bin/sh
+
+SCRIPT=$(readlink -f $0)
+SCRIPTPATH=`dirname $SCRIPT`
+
+usage() {
+    echo "usage: config [command]"
+    echo
+    echo "Build target utility"
+    echo
+    echo "Commands:"
+    echo "  ch <config>     Change config target"
+    echo "  get             Print current target"
+    echo "  ls              List config targets"
+    echo "  path            Path to current target file"
+    echo "  help            Show this message and exit (default)"
+}
+
+if [ "$1" = "ch" ]; then
+    if [ "$#" -lt 2 ]; then
+        usage
+    elif [ ! -f $SCRIPTPATH/configs/$2 ]; then
+        echo "config $2 does not exist"
+    else
+        rm -f $SCRIPTPATH/.config
+        ln -s $SCRIPTPATH/configs/$2 $SCRIPTPATH/.config
+    fi
+elif [ "$1" = "get" ]; then
+    if [ -h $SCRIPTPATH/.config ]; then
+        echo $(basename `readlink $SCRIPTPATH/.config`)
+    else
+        echo "unknown"
+    fi
+elif [ "$1" = "ls" ]; then
+    for f in $SCRIPTPATH/configs/*; do
+        echo $(basename $f)
+    done
+elif [ "$1" = "path" ]; then
+    echo $2 $(readlink $SCRIPTPATH/.config)
+else
+    usage
+fi
+

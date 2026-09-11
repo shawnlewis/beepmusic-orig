@@ -1,0 +1,20 @@
+# beep_data uci config file
+#
+# This is used to store data that may change dynamically.
+
+config main 'main'
+    # (string) Friendly name of this device, may be set by the user via
+    # beepmanager.
+    option device_name '$DEV_NAME'
+
+    # (string) Cluster ID this device belongs to.  Devices in different
+    # clusters ignore eachother. Set automatically by beepmanager unless
+    # 'force_cluster' is set in beep_devel
+    option cluster_id '$CLUSTER_ID'
+
+    # (string) Default audio group to join upon startup, can be changed by
+    # the user (via beepmanager)
+    option group_id '$GROUP_ID'
+
+    # (int) 0-65536. Volume level for this player, managed by playnet.
+    option playnet_gain '65536'

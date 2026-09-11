@@ -1,0 +1,11 @@
+--- a/mDNSCore/DNSCommon.c
++++ b/mDNSCore/DNSCommon.c
+@@ -2643,7 +2643,7 @@ mDNSexport const mDNSu8 *GetLargeResourc
+ 								if (ptr + 4 > end) { LogMsg("GetLargeResourceRecord: OPT RDATA ptr + 4 > end"); return(mDNSNULL); }
+ 								opt->opt    = getVal16(&ptr);
+ 								opt->optlen = getVal16(&ptr);
+-								if (!ValidDNSOpt(opt)) { LogMsg("GetLargeResourceRecord: opt %d optlen %d wrong", opt->opt, opt->optlen); return(mDNSNULL); }
++								if (!ValidDNSOpt(opt)) { /* Beep: we disabled this LogMsg("GetLargeResourceRecord: opt %d optlen %d wrong", opt->opt, opt->optlen); */ return(mDNSNULL); }
+ 								if (ptr + opt->optlen > end) { LogMsg("GetLargeResourceRecord: ptr + opt->optlen > end"); return(mDNSNULL); }
+ 								switch(opt->opt)
+ 									{

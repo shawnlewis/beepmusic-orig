@@ -1,0 +1,20 @@
+#!/bin/sh /etc/rc.common
+
+#START=18
+#STOP=10
+
+SERVICE_DAEMONIZE=1
+SERVICE_MATCH_NAME=1
+SERVICE_MATCH_EXEC=
+
+start() {
+    echo start beepmanagerd
+    service_start /beep/beepmanagerd
+}
+
+stop() {
+    echo stop beepmanagerd
+
+    # kill any leftover processes
+    /beep/beepmanagerd_stop.sh
+}

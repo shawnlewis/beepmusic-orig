@@ -1,0 +1,21 @@
+Import('root_env', 'env')
+
+beepcomm_src = [
+    'beepcomm/apps.c',
+    'beepcomm/header.c',
+    'beepcomm/main.c',
+    'beepcomm/messages.c',
+    'beepcomm/mongoose.c',
+    'beepcomm/mongoose_util.c',
+    'beepcomm/ssdp.c',
+    'beepcomm/util.c',
+]
+
+beepcomm_libs = ['beep', 'ubox', 'ubus', 'blobmsg_json', 'uuid', 'dl', 'pthread']
+
+env.Append(CPPDEFINES=['USE_WEBSOCKET'])
+
+beepcomm = env.Program(
+    target='beepcomm',
+    source=beepcomm_src,
+    LIBS=beepcomm_libs)

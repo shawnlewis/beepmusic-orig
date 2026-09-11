@@ -1,0 +1,9 @@
+Import('root_env', 'env')
+
+
+beepdiscovery_src = ['beepdiscovery/beepdiscovery.c']
+
+beepdiscovery = env.Program(
+    target='beepdiscovery',
+    source=beepdiscovery_src,
+    LIBS=['beep', 'dns_sd', 'ubox', 'ubus'])

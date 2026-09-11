@@ -1,0 +1,21 @@
+# beep_static uci config file
+#
+# used to store static configuration that may be changed during device
+# updates.
+
+config main 'main'
+    # (string) Beep data backend URL: http://<data_host>:<data_port><data_path>
+    # Do not change these values.
+    option data_host 'reverb.beepdevices.com'
+    option data_port '40937'
+    option data_path '/1/data/'
+
+    # (string) Beep update backend URL: http://<update_host>:<update_port>
+    # Do not change these values.
+    option update_serv 'reverb.beepdevices.com'
+    option update_port '40937'
+
+    # (string) Beep crash backend URL: http://<crash_host>:<crash_port>
+    # Do not change these values.
+    option crash_serv 'reverb.beepdevices.com'
+    option crash_port '40937'

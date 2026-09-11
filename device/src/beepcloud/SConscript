@@ -1,0 +1,11 @@
+Import('root_env', 'env')
+
+beepcloud_src = [
+    'beepcloud/main.c',
+    'beepcloud/data.c',
+]
+
+beepcloud= env.Program(
+    target='beepcloud',
+    source=beepcloud_src,
+    LIBS=['beep', 'ubox', 'ubus', 'blobmsg_json', 'curl', 'crypto', 'ssl'])

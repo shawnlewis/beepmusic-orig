@@ -1,0 +1,10 @@
+#ifndef IOMCU_BOOTLOADER_B3_MAIN_H
+#define IOMCU_BOOTLOADER_B3_MAIN_H
+
+
+#define BTLDR_DEV_INFO_BRD_ID                   (I2C_DEV_INFO_BRD_ID_B3_MAIN)
+#define BTLDR_DEV_INFO_BRD_REV                  (4)
+#define BTLDR_DEV_INFO_CHIP_ID                  (I2C_DEV_INFO_CHIP_ID_STM8L151G6)
+
+
+#endif  // IOMCU_BOOTLOADER_B3_MAIN_H

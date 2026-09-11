@@ -1,0 +1,3 @@
+config main 'main'
+    #Set cluster_id in beep_data
+    #option force_cluster 1

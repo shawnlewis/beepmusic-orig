@@ -1,0 +1,8 @@
+*.o
+*.swp
+.depend
+*.a
+
+bin
+u-boot/include/asm
+u-boot/include/asm-mips/arch
