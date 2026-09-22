@@ -1,12 +1,21 @@
-# Beep device source archive
+# beepmusic-orig
+
+> **Restored from the original Beep code archive.** This repository preserves
+> the software for the original Beep music devices, recovered from company
+> archives and published in 2026 to help the community get those devices working
+> again. It is a sanitized snapshot of the 2015 code, with fresh Git history.
+> It has not been rebuilt or tested on hardware.
 
 Historical source for the original Beep audio device, prepared from release
 `v0.9.12r2` (June 15, 2015). This copy contains the embedded Linux software,
 STM8L input-controller firmware source, bootloader source, and selected tools.
 
-This is a source archive for restoration work. It has not been rebuilt or tested
-on hardware. The original company's online services are not supplied, and the
-Spotify and Pandora integrations have been removed.
+The original company's online services are not supplied, and the Spotify and
+Pandora integrations have been removed.
+
+Original Beep-owned code is released under the [MIT License](LICENSE).
+Bundled third-party code retains its existing licenses; see
+[licensing and third-party notices](LICENSING.md).
 
 ## Start here
 
@@ -87,9 +96,9 @@ private signing keys are supplied.
   Its optional default-key header now stops compilation with an explanation.
   Generate local material before enabling that backend. Some upstream TLS test
   fixtures and unrelated binary resources are also omitted.
-- Third-party source retains its existing copyright/license notices. No blanket
-  license has yet been assigned to Beep-owned files in this prepared copy; that
-  decision remains with the owner before publication.
+- Third-party source retains its existing copyright/license notices. The MIT
+  grant covers original Beep-owned code and does not replace third-party terms;
+  see [LICENSING.md](LICENSING.md).
 
 Existing test suites are historical source, not evidence that this export
 builds or works. The preparation checks cover exclusions, secret scanning,
